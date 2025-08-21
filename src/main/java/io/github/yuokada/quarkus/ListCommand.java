@@ -1,5 +1,6 @@
 package io.github.yuokada.quarkus;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.yuokada.quarkus.model.Note;
 import jakarta.inject.Inject;
 import java.time.ZoneId;
@@ -9,6 +10,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 /**
  * A command to list notes.
@@ -18,6 +20,12 @@ public class ListCommand implements Runnable {
 
   @Inject
   HackMdService hackMdService;
+
+  @Inject
+  ObjectMapper objectMapper; // Inject ObjectMapper for JSON serialization
+
+  @Option(names = {"--json"}, description = "Output notes in JSON format.")
+  boolean jsonOutput;
 
   private static final DateTimeFormatter formatter =
       DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
@@ -35,31 +43,39 @@ public class ListCommand implements Runnable {
     notes.sort(Comparator.comparing(Note::publishedAt,
         Comparator.nullsLast(Comparator.reverseOrder())));
 
-    int maxIdLength = "ID".length();
-    int maxTitleLength = "Title".length();
-
-    for (Note note : notes) {
-      if (note.shortId() != null && note.shortId().length() > maxIdLength) {
-        maxIdLength = note.shortId().length();
+    if (jsonOutput) {
+      try {
+        System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(notes));
+      } catch (Exception e) {
+        System.err.println("Error serializing notes to JSON: " + e.getMessage());
       }
-      if (note.title() != null && note.title().length() > maxTitleLength) {
-        maxTitleLength = note.title().length();
+    } else {
+      int maxIdLength = "ID".length();
+      int maxTitleLength = "Title".length();
+
+      for (Note note : notes) {
+        if (note.shortId() != null && note.shortId().length() > maxIdLength) {
+          maxIdLength = note.shortId().length();
+        }
+        if (note.title() != null && note.title().length() > maxTitleLength) {
+          maxTitleLength = note.title().length();
+        }
       }
-    }
 
-    String format = "| %-" + maxIdLength + "s | %-" + maxTitleLength + "s | %-19s |%n";
+      String format = "| %-" + maxIdLength + "s | %-" + maxTitleLength + "s | %-19s |%n";
 
-    // Header
-    System.out.format(format, "ID", "Title", "Published At");
-    // Separator
-    System.out.format(format, "-".repeat(maxIdLength), "-".repeat(maxTitleLength),
-        "-".repeat(19));
+      // Header
+      System.out.format(format, "ID", "Title", "Published At");
+      // Separator
+      System.out.format(format, "-".repeat(maxIdLength), "-".repeat(maxTitleLength),
+          "-".repeat(19));
 
-    // Rows
-    for (Note note : notes) {
-      String publishedAtStr = (note.publishedAt() == null) ? "N/A"
-          : formatter.format(note.publishedAt());
-      System.out.format(format, note.shortId(), note.title(), publishedAtStr);
+      // Rows
+      for (Note note : notes) {
+        String publishedAtStr = (note.publishedAt() == null) ? "N/A"
+            : formatter.format(note.publishedAt());
+        System.out.format(format, note.shortId(), note.title(), publishedAtStr);
+      }
     }
   }
 }
