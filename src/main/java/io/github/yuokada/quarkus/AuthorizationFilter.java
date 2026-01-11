@@ -19,7 +19,9 @@ public class AuthorizationFilter implements ClientRequestFilter {
 
   @Override
   public void filter(ClientRequestContext requestContext) throws IOException {
-    String authorization = "Bearer " + apiToken;
-    requestContext.getHeaders().add("Authorization", authorization);
+    if (apiToken != null && !apiToken.isBlank()) {
+      String authorization = "Bearer " + apiToken;
+      requestContext.getHeaders().add("Authorization", authorization);
+    }
   }
 }
