@@ -72,3 +72,15 @@ As picocli applications will often require arguments to be passed on the command
 ```shell script
 ./mvnw quarkus:dev -Dquarkus.args='Quarky'
 ```
+
+## Requirements
+
+You need a HackMD account at https://hackmd.io/ and must set the HackMD API token in the `HACKMD_API_TOKEN` environment variable before running the CLI. For API token creation, see https://hackmd.io/c/tutorials/%2F%40docs%2Fissue-revoke-api-token-en?utm_source=blog&utm_medium=footer.
+
+## CLI Commands
+
+The application exposes the following subcommands:
+
+- `list`: List notes
+- `create`: Create a new note
+- `get`: Get a specific note by ID
