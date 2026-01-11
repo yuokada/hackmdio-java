@@ -13,14 +13,16 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @ApplicationScoped
 public class AuthorizationFilter implements ClientRequestFilter {
 
+  private static final String BEARER_PREFIX = "Bearer ";
+
   @Inject
-  @ConfigProperty(name = "hackmd.api.token")
+  @ConfigProperty(name = "hackmd.api.token", defaultValue = "")
   String apiToken;
 
   @Override
   public void filter(ClientRequestContext requestContext) throws IOException {
     if (apiToken != null && !apiToken.isBlank()) {
-      String authorization = "Bearer " + apiToken;
+      String authorization = BEARER_PREFIX + apiToken;
       requestContext.getHeaders().add("Authorization", authorization);
     }
   }
