@@ -2,11 +2,8 @@ package io.github.yuokada.quarkus;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import jakarta.ws.rs.client.ClientRequestContext;
@@ -91,9 +88,7 @@ class AuthorizationFilterTest {
     filter.filter(requestContext);
 
     // Then
-    String authHeader = (String) headers.getFirst("Authorization");
-    assertTrue(authHeader.startsWith("Bearer "));
-    assertEquals("Bearer my-token", authHeader);
+    assertEquals("Bearer my-token", headers.getFirst("Authorization"));
   }
 
   @Test
