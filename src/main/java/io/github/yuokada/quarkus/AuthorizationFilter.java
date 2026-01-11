@@ -4,8 +4,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.client.ClientRequestContext;
 import jakarta.ws.rs.client.ClientRequestFilter;
-import java.io.IOException;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.logging.Logger;
 
 /**
  * A client request filter that adds the Authorization header to all outgoing requests.
@@ -13,17 +13,21 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @ApplicationScoped
 public class AuthorizationFilter implements ClientRequestFilter {
 
-  private static final String BEARER_PREFIX = "Bearer ";
+    private static final Logger LOGGER = Logger.getLogger(AuthorizationFilter.class.getName());
 
-  @Inject
-  @ConfigProperty(name = "hackmd.api.token", defaultValue = "")
-  String apiToken;
+    private static final String BEARER_PREFIX = "Bearer ";
 
-  @Override
-  public void filter(ClientRequestContext requestContext) throws IOException {
-    if (apiToken != null && !apiToken.isBlank()) {
-      String authorization = BEARER_PREFIX + apiToken;
-      requestContext.getHeaders().add("Authorization", authorization);
+    @Inject
+    @ConfigProperty(name = "hackmd.api.token", defaultValue = "")
+    String apiToken;
+
+    @Override
+    public void filter(ClientRequestContext requestContext) {
+        if (apiToken != null && !apiToken.isBlank()) {
+            String authorization = BEARER_PREFIX + apiToken;
+            requestContext.getHeaders().add("Authorization", authorization);
+        } else {
+            LOGGER.warn("API token is not set. Authorization header will not be added.");
+        }
     }
-  }
 }
