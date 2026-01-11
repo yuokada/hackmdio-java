@@ -81,6 +81,12 @@ For API token creation, see [How to issue an API token](https://hackmd.io/@hackm
 - [Getting Started \- HackMD](https://hackmd.io/@hackmd-api/developer-portal/https%3A%2F%2Fhackmd.io%2F%40hackmd-api%2FrkoVeBXkq?utm_source=settings-api&utm_medium=inline-cta)
 - [Swagger UI](https://api.hackmd.io/v1/docs?_gl=1*1vheg5h*_ga*MTkxOTM2NDA5MC4xNzQyODU4OTg5*_ga_NGVZMM6DR6*czE3NjgxNDEyODgkbzkzJGcxJHQxNzY4MTQxOTMwJGoxMyRsMSRoMTQ1Njc0MTM5NA..)
 
+## CI
+
+Every push and pull request targeting `master` triggers the GitHub Actions workflow defined in `.github/workflows/ci.yml`, which sets up Temurin JDK 17 and runs `./mvnw -B test` to ensure the CLI continues to build and pass tests.
+
+Dependency updates are monitored by Dependabot (`.github/dependabot.yml`), which opens weekly pull requests for Maven dependencies and GitHub Actions.
+
 ## CLI Commands
 
 The application exposes the following subcommands:
