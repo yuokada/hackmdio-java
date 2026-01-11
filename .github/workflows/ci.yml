@@ -25,3 +25,6 @@ jobs:
 
       - name: Run tests
         run: ./mvnw -B test
+
+      - name: Run tests
+        run: ./mvnw -B package
