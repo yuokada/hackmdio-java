@@ -13,6 +13,7 @@ import java.util.List;
  * @param tags        The tags associated with the note.
  * @param publishedAt The timestamp when the note was published.
  * @param shortId     The short ID of the note.
+ * @param updatedAt   The timestamp when the note was last updated.
  */
 public record Note(
     String id,
@@ -22,6 +23,8 @@ public record Note(
     @JsonProperty("publishedAt")
     Instant publishedAt,
     @JsonProperty("shortId")
-    String shortId
+    String shortId,
+    @JsonProperty("updatedAt")
+    Instant updatedAt
 ) {
 }

@@ -9,6 +9,7 @@ import picocli.CommandLine.Command;
  */
 @TopCommand
 @Command(mixinStandardHelpOptions = true,
-    subcommands = {ListCommand.class, CreateCommand.class, GetCommand.class})
+    subcommands = {ListCommand.class, CreateCommand.class, GetCommand.class,
+        IndexCommand.class, SearchCommand.class})
 public class HackmdCommand {
 }
