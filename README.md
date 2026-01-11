@@ -75,7 +75,7 @@ As picocli applications will often require arguments to be passed on the command
 
 ## Requirements
 
-You need a HackMD account at https://hackmd.io/ and must set the HackMD API token in the `HACKMD_API_TOKEN` environment variable before running the CLI.  
+You need a HackMD account at https://hackmd.io/ and must set the HackMD API token in the `HACKMD_API_TOKEN` environment variable before running the CLI.
 For API token creation, see [How to issue an API token](https://hackmd.io/@hackmd-api/developer-portal/https%3A%2F%2Fhackmd.io%2F%40hackmd-api%2Fhow-to-issue-an-api-token?utm_source=settings-api&utm_medium=inline-cta)
 
 - [Getting Started \- HackMD](https://hackmd.io/@hackmd-api/developer-portal/https%3A%2F%2Fhackmd.io%2F%40hackmd-api%2FrkoVeBXkq?utm_source=settings-api&utm_medium=inline-cta)
