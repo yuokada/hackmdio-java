@@ -7,7 +7,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.util.Set;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 /**
@@ -23,9 +22,6 @@ public class HackMdService {
   @Inject
   NoteRepository noteRepository;
 
-  @ConfigProperty(name = "hackmd.api.token")
-  String apiToken;
-
   /**
    * Lists all notes from the API and synchronizes them with the local database.
    *
@@ -33,8 +29,7 @@ public class HackMdService {
    */
   @Transactional
   public Set<Note> listNotes() {
-    String authorization = "Bearer " + apiToken;
-    Set<Note> notes = hackMdApi.getNotes(authorization);
+    Set<Note> notes = hackMdApi.getNotes();
 
     for (Note note : notes) {
       NoteEntity entity = noteRepository.findById(note.id());
@@ -59,9 +54,8 @@ public class HackMdService {
    */
   @Transactional
   public Note createNote(String title, String content) {
-    String authorization = "Bearer " + apiToken;
     var request = new CreateNoteRequest(title, content, "owner", "owner");
-    Note newNote = hackMdApi.createNote(authorization, request);
+    Note newNote = hackMdApi.createNote(request);
 
     NoteEntity entity = NoteEntity.from(newNote);
     noteRepository.persist(entity);
@@ -77,8 +71,7 @@ public class HackMdService {
    */
   @Transactional
   public Note getNote(String noteId) {
-    String authorization = "Bearer " + apiToken;
-    Note note = hackMdApi.getNote(authorization, noteId);
+    Note note = hackMdApi.getNote(noteId);
 
     NoteEntity entity = noteRepository.findById(note.id());
     if (entity == null) {
