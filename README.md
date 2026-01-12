@@ -129,5 +129,3 @@ The `search` command performs full-text search on locally indexed notes:
 - **Fast Search**: Uses FTS (Full-Text Search) index for quick results
 - **Offline**: Works without internet connection after indexing
 - **Content Search**: Searches both title and content fields
-
-Indexed data is stored under `$HOME/.hackmdio/` by default. You can override the location by setting the `couchbase.lite.database.path` configuration property if you want to use a different directory.
