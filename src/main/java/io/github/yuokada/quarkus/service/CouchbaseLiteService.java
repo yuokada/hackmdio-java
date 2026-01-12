@@ -15,6 +15,8 @@ import com.couchbase.lite.SelectResult;
 import io.github.yuokada.quarkus.model.NoteDetailResponse;
 import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,8 +36,8 @@ public class CouchbaseLiteService {
 
   private Database database;
 
-  @ConfigProperty(name = "couchbase.lite.database.path", defaultValue = ".")
-  String databasePath;
+  @ConfigProperty(name = "couchbase.lite.database.path", defaultValue = "")
+  String configuredDatabasePath;
 
   /**
    * Initializes the Couchbase Lite database.
@@ -44,11 +46,21 @@ public class CouchbaseLiteService {
     try {
       CouchbaseLite.init();
       DatabaseConfiguration config = new DatabaseConfiguration();
-      config.setDirectory(databasePath);
+      String directoryPath = resolveDatabasePath();
+      Files.createDirectories(Path.of(directoryPath));
+      config.setDirectory(directoryPath);
       database = new Database(DATABASE_NAME, config);
     } catch (Exception e) {
       throw new RuntimeException("Failed to initialize Couchbase Lite database", e);
     }
+  }
+
+  private String resolveDatabasePath() {
+    if (configuredDatabasePath != null && !configuredDatabasePath.isBlank()) {
+      return configuredDatabasePath;
+    }
+    String homeDir = System.getProperty("user.home");
+    return Path.of(homeDir, ".hackmdio").toString();
   }
 
   /**
