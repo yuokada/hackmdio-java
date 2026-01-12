@@ -1,5 +1,6 @@
-package io.github.yuokada.quarkus;
+package io.github.yuokada.quarkus.service;
 
+import io.github.yuokada.quarkus.HackMdApi;
 import io.github.yuokada.quarkus.model.CreateNoteRequest;
 import io.github.yuokada.quarkus.model.Note;
 import io.github.yuokada.quarkus.model.NoteDetailResponse;

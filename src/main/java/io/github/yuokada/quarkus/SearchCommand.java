@@ -1,5 +1,6 @@
 package io.github.yuokada.quarkus;
 
+import io.github.yuokada.quarkus.service.CouchbaseLiteService;
 import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Map;

@@ -2,6 +2,8 @@ package io.github.yuokada.quarkus;
 
 import io.github.yuokada.quarkus.model.Note;
 import io.github.yuokada.quarkus.model.NoteDetailResponse;
+import io.github.yuokada.quarkus.service.CouchbaseLiteService;
+import io.github.yuokada.quarkus.service.HackMdService;
 import jakarta.inject.Inject;
 import java.util.Set;
 import picocli.CommandLine.Command;

@@ -1,4 +1,4 @@
-package io.github.yuokada.quarkus;
+package io.github.yuokada.quarkus.service;
 
 import com.couchbase.lite.CouchbaseLite;
 import com.couchbase.lite.Database;
@@ -15,7 +15,6 @@ import com.couchbase.lite.SelectResult;
 import io.github.yuokada.quarkus.model.NoteDetailResponse;
 import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;

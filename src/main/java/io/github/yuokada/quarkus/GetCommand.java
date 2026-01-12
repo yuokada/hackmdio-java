@@ -1,6 +1,7 @@
 package io.github.yuokada.quarkus;
 
 import io.github.yuokada.quarkus.model.NoteDetailResponse;
+import io.github.yuokada.quarkus.service.HackMdService;
 import jakarta.inject.Inject;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;

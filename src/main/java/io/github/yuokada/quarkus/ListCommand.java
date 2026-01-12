@@ -2,6 +2,7 @@ package io.github.yuokada.quarkus;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.yuokada.quarkus.model.Note;
+import io.github.yuokada.quarkus.service.HackMdService;
 import jakarta.inject.Inject;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
