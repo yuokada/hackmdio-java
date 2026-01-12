@@ -1,5 +1,6 @@
 package io.github.yuokada.quarkus;
 
+import io.github.yuokada.quarkus.model.IndexedNote;
 import io.github.yuokada.quarkus.model.Note;
 import io.github.yuokada.quarkus.model.NoteDetailResponse;
 import io.github.yuokada.quarkus.service.CouchbaseLiteService;
@@ -28,7 +29,7 @@ public class IndexCommand implements Runnable {
     couchbaseLiteService.createFtsIndex();
 
     // Get all notes from API
-    Set<Note> notes = hackMdService.listNotes();
+    var notes = hackMdService.listNoteDetails();
 
     if (notes.isEmpty()) {
       System.out.println("No notes found.");
@@ -44,7 +45,7 @@ public class IndexCommand implements Runnable {
     System.out.printf("Found %d notes from HackMD API.%n", totalNotes);
     System.out.println("Processing notes...");
 
-    for (Note note : notes) {
+    for (IndexedNote note : notes.stream().map(IndexedNote::fromNote).toList()) {
       currentProgress++;
 
       // Check if note needs update
@@ -52,7 +53,7 @@ public class IndexCommand implements Runnable {
 
       if (needsUpdate) {
         // Fetch full note content from API
-        NoteDetailResponse fullNote = hackMdService.getNote(note.id());
+        NoteDetailResponse fullNote = hackMdService.getNote(note.originalId());
 
         // Determine if it's new or updated
         if (couchbaseLiteService.getNote(note.id()) == null) {

@@ -28,6 +28,7 @@ package io.github.yuokada.quarkus.model;
 //  "readPermission": "owner",
 //  "writePermission": "owner"
 //}
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
 import java.util.List;
@@ -63,12 +64,14 @@ public record NoteDetailResponse(
     String readPermission,
     String writePermission
 ) {
+
     public record LastChangeUser(
         String name,
         String userPath,
         String photo,
         String biography
     ) {
+
     }
 
     public Note toNote() {
@@ -82,5 +85,4 @@ public record NoteDetailResponse(
             this.lastChangedAt
         );
     }
-
 }

@@ -32,6 +32,11 @@ public class HackMdService {
     return notes.stream().map(NoteDetailResponse::toNote).collect(Collectors.toSet());
   }
 
+  public Set<NoteDetailResponse> listNoteDetails() {
+      // TODO: Limit 5 notes for testing
+      return hackMdApi.getNotes().stream().limit(5).collect(Collectors.toSet());
+  }
+
   /**
    * Creates a new note via the API and saves it to the local database.
    *
