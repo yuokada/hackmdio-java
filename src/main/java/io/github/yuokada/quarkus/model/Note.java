@@ -7,13 +7,13 @@ import java.util.List;
 /**
  * Represents a HackMD note.
  *
- * @param id          The note ID.
- * @param title       The title of the note.
- * @param content     The content of the note.
- * @param tags        The tags associated with the note.
- * @param publishedAt The timestamp when the note was published.
- * @param shortId     The short ID of the note.
- * @param updatedAt   The timestamp when the note was last updated.
+ * @param id            The note ID.
+ * @param title         The title of the note.
+ * @param content       The content of the note.
+ * @param tags          The tags associated with the note.
+ * @param publishedAt   The timestamp when the note was published.
+ * @param shortId       The short ID of the note.
+ * @param lastChangedAt The timestamp when the note was last updated.
  */
 public record Note(
     String id,
@@ -24,7 +24,7 @@ public record Note(
     Instant publishedAt,
     @JsonProperty("shortId")
     String shortId,
-    @JsonProperty("updatedAt")
-    Instant updatedAt
+    @JsonProperty("lastChangedAt")
+    Instant lastChangedAt
 ) {
 }

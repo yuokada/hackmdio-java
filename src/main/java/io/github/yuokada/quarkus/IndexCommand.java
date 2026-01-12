@@ -1,6 +1,7 @@
 package io.github.yuokada.quarkus;
 
 import io.github.yuokada.quarkus.model.Note;
+import io.github.yuokada.quarkus.model.NoteDetailResponse;
 import jakarta.inject.Inject;
 import java.util.Set;
 import picocli.CommandLine.Command;
@@ -45,11 +46,11 @@ public class IndexCommand implements Runnable {
       currentProgress++;
 
       // Check if note needs update
-      boolean needsUpdate = couchbaseLiteService.needsUpdate(note.id(), note.updatedAt());
+      boolean needsUpdate = couchbaseLiteService.needsUpdate(note.id(), note.lastChangedAt());
 
       if (needsUpdate) {
         // Fetch full note content from API
-        Note fullNote = hackMdService.getNote(note.id());
+        NoteDetailResponse fullNote = hackMdService.getNote(note.id());
 
         // Determine if it's new or updated
         if (couchbaseLiteService.getNote(note.id()) == null) {

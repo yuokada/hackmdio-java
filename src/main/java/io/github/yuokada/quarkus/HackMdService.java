@@ -2,11 +2,13 @@ package io.github.yuokada.quarkus;
 
 import io.github.yuokada.quarkus.model.CreateNoteRequest;
 import io.github.yuokada.quarkus.model.Note;
+import io.github.yuokada.quarkus.model.NoteDetailResponse;
 import io.github.yuokada.quarkus.model.NoteEntity;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 /**
@@ -29,9 +31,9 @@ public class HackMdService {
    */
   @Transactional
   public Set<Note> listNotes() {
-    Set<Note> notes = hackMdApi.getNotes();
+    Set<NoteDetailResponse> notes = hackMdApi.getNotes();
 
-    for (Note note : notes) {
+    for (NoteDetailResponse note : notes) {
       NoteEntity entity = noteRepository.findById(note.id());
       if (entity == null) {
         entity = new NoteEntity();
@@ -42,7 +44,7 @@ public class HackMdService {
       entity.publishedAt = note.publishedAt();
       noteRepository.persist(entity);
     }
-    return notes;
+    return notes.stream().map(NoteDetailResponse::toNote).collect(Collectors.toSet());
   }
 
   /**
@@ -70,8 +72,8 @@ public class HackMdService {
    * @return The note.
    */
   @Transactional
-  public Note getNote(String noteId) {
-    Note note = hackMdApi.getNote(noteId);
+  public NoteDetailResponse getNote(String noteId) {
+    NoteDetailResponse note = hackMdApi.getNote(noteId);
 
     NoteEntity entity = noteRepository.findById(note.id());
     if (entity == null) {

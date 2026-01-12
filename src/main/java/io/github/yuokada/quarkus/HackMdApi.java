@@ -2,6 +2,7 @@ package io.github.yuokada.quarkus;
 
 import io.github.yuokada.quarkus.model.CreateNoteRequest;
 import io.github.yuokada.quarkus.model.Note;
+import io.github.yuokada.quarkus.model.NoteDetailResponse;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -24,7 +25,7 @@ public interface HackMdApi {
   @GET
   @Path("/notes")
   @Produces(MediaType.APPLICATION_JSON)
-  Set<Note> getNotes();
+  Set<NoteDetailResponse> getNotes();
 
   @POST
   @Path("/notes")
@@ -35,5 +36,5 @@ public interface HackMdApi {
   @GET
   @Path("/notes/{noteId}")
   @Produces(MediaType.APPLICATION_JSON)
-  Note getNote(@PathParam("noteId") String noteId);
+  NoteDetailResponse getNote(@PathParam("noteId") String noteId);
 }

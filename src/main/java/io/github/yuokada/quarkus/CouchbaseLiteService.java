@@ -12,7 +12,7 @@ import com.couchbase.lite.QueryBuilder;
 import com.couchbase.lite.Result;
 import com.couchbase.lite.ResultSet;
 import com.couchbase.lite.SelectResult;
-import io.github.yuokada.quarkus.model.Note;
+import io.github.yuokada.quarkus.model.NoteDetailResponse;
 import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -77,7 +77,7 @@ public class CouchbaseLiteService {
    *
    * @param note The note to save.
    */
-  public void saveNote(Note note) {
+  public void saveNote(NoteDetailResponse note) {
     try {
       if (database == null) {
         init();
@@ -96,8 +96,8 @@ public class CouchbaseLiteService {
         doc.setArray("tags", tagsArray);
       }
 
-      if (note.updatedAt() != null) {
-        doc.setString("updatedAt", note.updatedAt().toString());
+      if (note.lastChangedAt() != null) {
+        doc.setString("updatedAt", note.lastChangedAt().toString());
       }
 
       if (note.publishedAt() != null) {
