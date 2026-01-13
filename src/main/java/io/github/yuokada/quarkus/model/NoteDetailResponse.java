@@ -30,6 +30,7 @@ package io.github.yuokada.quarkus.model;
 //}
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.time.Instant;
 import java.util.List;
 
@@ -43,19 +44,24 @@ public record NoteDetailResponse(
     String title,
     List<String> tags,
     @JsonProperty("createdAt")
+    @JsonDeserialize(using = EpochMillisInstantDeserializer.class)
     Instant createdAt,
     @JsonProperty("titleUpdatedAt")
+    @JsonDeserialize(using = EpochMillisInstantDeserializer.class)
     Instant titleUpdatedAt,
     @JsonProperty("tagsUpdatedAt")
+    @JsonDeserialize(using = EpochMillisInstantDeserializer.class)
     Instant tagsUpdatedAt,
     String publishType,
     @JsonProperty("publishedAt")
+    @JsonDeserialize(using = EpochMillisInstantDeserializer.class)
     Instant publishedAt,
     String permalink,
     String publishLink,
     String shortId,
     String content,
     @JsonProperty("lastChangedAt")
+    @JsonDeserialize(using = EpochMillisInstantDeserializer.class)
     Instant lastChangedAt,
     @JsonProperty("lastChangeUser")
     LastChangeUser lastChangeUser,
