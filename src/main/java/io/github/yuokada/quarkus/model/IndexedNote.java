@@ -33,6 +33,7 @@ public record IndexedNote(
     String readPermission,
     String writePermission
 ) {
+
     private static final String ID_PREFIX = "note::";
 
     public static IndexedNote fromNote(NoteDetailResponse note) {
