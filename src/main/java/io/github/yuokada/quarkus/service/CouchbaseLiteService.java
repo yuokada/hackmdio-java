@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.logging.Logger;
 
 /**
  * Service for managing Couchbase Lite database operations.
@@ -28,6 +29,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @ApplicationScoped
 @Startup
 public class CouchbaseLiteService {
+  private static final Logger logger = Logger.getLogger(CouchbaseLiteService.class);
 
   private static final String DATABASE_NAME = "hackmd_notes";
   private static final String FTS_INDEX_NAME = "content_fts_index";
@@ -68,7 +70,7 @@ public class CouchbaseLiteService {
       database.createIndex(FTS_INDEX_NAME, ftsIndex);
     } catch (Exception e) {
       // Index might already exist, which is fine
-      System.err.println("FTS Index creation note: " + e.getMessage());
+      logger.error("FTS Index creation note: " + e.getMessage());
     }
   }
 
@@ -151,7 +153,6 @@ public class CouchbaseLiteService {
         return true; // Note doesn't exist, needs to be fetched
       }
 
-      String downloadedAtStr = doc.getString("downloadedAt");
       String storedUpdatedAtStr = doc.getString("updatedAt");
 
       if (updatedAt == null) {
@@ -228,7 +229,7 @@ public class CouchbaseLiteService {
         database.close();
       }
     } catch (Exception e) {
-      System.err.println("Failed to close database: " + e.getMessage());
+      logger.warn("Failed to close Couchbase Lite database", e);
     }
   }
 }

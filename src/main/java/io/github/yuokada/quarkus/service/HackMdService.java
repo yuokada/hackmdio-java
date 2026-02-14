@@ -33,8 +33,8 @@ public class HackMdService {
   }
 
   public Set<NoteDetailResponse> listNoteDetails() {
-      // TODO: Limit 5 notes for testing
-      return hackMdApi.getNotes().stream().limit(5).collect(Collectors.toSet());
+      // TODO: Implement pagination if needed
+      return hackMdApi.getNotes();
   }
 
   /**
