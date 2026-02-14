@@ -1,12 +1,11 @@
 package io.github.yuokada.quarkus;
 
 import io.github.yuokada.quarkus.model.IndexedNote;
-import io.github.yuokada.quarkus.model.Note;
 import io.github.yuokada.quarkus.model.NoteDetailResponse;
 import io.github.yuokada.quarkus.service.CouchbaseLiteService;
 import io.github.yuokada.quarkus.service.HackMdService;
 import jakarta.inject.Inject;
-import java.util.Set;
+import org.jboss.resteasy.reactive.ClientWebApplicationException;
 import picocli.CommandLine.Command;
 
 /**
@@ -14,6 +13,10 @@ import picocli.CommandLine.Command;
  */
 @Command(name = "index", description = "Index notes from HackMD to local database")
 public class IndexCommand implements Runnable {
+
+  private static final int API_CALL_DELAY_MS = 500;
+  private static final int MAX_RETRIES = 3;
+  private static final int INITIAL_BACKOFF_MS = 6000;
 
   @Inject
   HackMdService hackMdService;
@@ -40,6 +43,7 @@ public class IndexCommand implements Runnable {
     int newNotes = 0;
     int updatedNotes = 0;
     int skippedNotes = 0;
+    int errorNotes = 0;
     int currentProgress = 0;
 
     System.out.printf("Found %d notes from HackMD API.%n", totalNotes);
@@ -48,24 +52,30 @@ public class IndexCommand implements Runnable {
     for (IndexedNote note : notes.stream().map(IndexedNote::fromNote).toList()) {
       currentProgress++;
 
-      // Check if note needs update
-      boolean needsUpdate = couchbaseLiteService.needsUpdate(note.id(), note.lastChangedAt());
+      try {
+        // Check if note needs update
+        boolean needsUpdate = couchbaseLiteService.needsUpdate(note.id(), note.lastChangedAt());
 
-      if (needsUpdate) {
-        // Fetch full note content from API
-        NoteDetailResponse fullNote = hackMdService.getNote(note.originalId());
+        if (needsUpdate) {
+          // Fetch full note content from API with retry on 429
+          NoteDetailResponse fullNote = fetchNoteWithRetry(note.originalId());
+          Thread.sleep(API_CALL_DELAY_MS);
 
-        // Determine if it's new or updated
-        if (couchbaseLiteService.getNote(note.id()) == null) {
-          newNotes++;
+          // Determine if it's new or updated
+          if (couchbaseLiteService.getNote(note.id()) == null) {
+            newNotes++;
+          } else {
+            updatedNotes++;
+          }
+
+          // Save to Couchbase Lite
+          couchbaseLiteService.saveNote(fullNote);
         } else {
-          updatedNotes++;
+          skippedNotes++;
         }
-
-        // Save to Couchbase Lite
-        couchbaseLiteService.saveNote(fullNote);
-      } else {
-        skippedNotes++;
+      } catch (Exception e) {
+        errorNotes++;
+        System.err.printf("Failed to index note %s: %s%n", note.originalId(), e.getMessage());
       }
 
       // Display progress
@@ -81,6 +91,31 @@ public class IndexCommand implements Runnable {
     System.out.printf("New notes: %d%n", newNotes);
     System.out.printf("Updated notes: %d%n", updatedNotes);
     System.out.printf("Skipped notes: %d%n", skippedNotes);
+    System.out.printf("Error notes: %d%n", errorNotes);
     System.out.println("Indexing completed successfully.");
+  }
+
+  private NoteDetailResponse fetchNoteWithRetry(String noteId) {
+    int retries = 0;
+    while (true) {
+      try {
+        return hackMdService.getNote(noteId);
+      } catch (ClientWebApplicationException e) {
+        if (e.getResponse().getStatus() == 429 && retries < MAX_RETRIES) {
+          retries++;
+          long backoff = INITIAL_BACKOFF_MS * (1L << (retries - 1));
+          System.err.printf("Rate limited (429). Retry %d/%d after %dms...%n",
+              retries, MAX_RETRIES, backoff);
+          try {
+            Thread.sleep(backoff);
+          } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            throw e;
+          }
+        } else {
+          throw e;
+        }
+      }
+    }
   }
 }
