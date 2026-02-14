@@ -43,7 +43,7 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
         </dependency>
-      <!--
+        <!--
               <dependency>
                   <groupId>io.quarkiverse.jdbc</groupId>
                   <artifactId>quarkus-jdbc-sqlite4j</artifactId>
@@ -69,6 +69,12 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit5-mockito</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>io.quarkiverse.wiremock</groupId>
+          <artifactId>quarkus-wiremock-test</artifactId>
+          <version>1.5.3</version>
+          <scope>test</scope>
         </dependency>
     </dependencies>
 

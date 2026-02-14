@@ -31,6 +31,7 @@ public class CouchbaseLiteService {
 
   private static final String DATABASE_NAME = "hackmd_notes";
   private static final String FTS_INDEX_NAME = "content_fts_index";
+  private static final String ID_PREFIX = "note::";
 
   private Database database;
 
@@ -81,7 +82,7 @@ public class CouchbaseLiteService {
       if (database == null) {
         init();
       }
-      MutableDocument doc = new MutableDocument(note.id());
+      MutableDocument doc = new MutableDocument(toDocId(note.id()));
       doc.setString("id", note.id());
       doc.setString("shortId", note.shortId());
       doc.setString("title", note.title());
@@ -123,7 +124,7 @@ public class CouchbaseLiteService {
       if (database == null) {
         init();
       }
-      com.couchbase.lite.Document doc = database.getDocument(noteId);
+      com.couchbase.lite.Document doc = database.getDocument(toDocId(noteId));
       if (doc == null) {
         return null;
       }
@@ -145,7 +146,7 @@ public class CouchbaseLiteService {
       if (database == null) {
         init();
       }
-      com.couchbase.lite.Document doc = database.getDocument(noteId);
+      com.couchbase.lite.Document doc = database.getDocument(toDocId(noteId));
       if (doc == null) {
         return true; // Note doesn't exist, needs to be fetched
       }
@@ -209,6 +210,13 @@ public class CouchbaseLiteService {
     } catch (Exception e) {
       throw new RuntimeException("Failed to search notes", e);
     }
+  }
+
+  private static String toDocId(String noteId) {
+    if (noteId.startsWith(ID_PREFIX)) {
+      return noteId;
+    }
+    return ID_PREFIX + noteId;
   }
 
   /**
