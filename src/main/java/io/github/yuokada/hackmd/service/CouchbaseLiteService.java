@@ -52,7 +52,7 @@ public class CouchbaseLiteService {
       Path dbDir = Path.of(databasePath);
       Files.createDirectories(dbDir);
       if (dbDir.getFileSystem().supportedFileAttributeViews().contains("posix")) {
-          Files.setPosixFilePermissions(dbDir, PosixFilePermissions.fromString("rwx------"));
+        Files.setPosixFilePermissions(dbDir, PosixFilePermissions.fromString("rwx------"));
       }
       DatabaseConfiguration config = new DatabaseConfiguration();
       config.setDirectory(databasePath);
