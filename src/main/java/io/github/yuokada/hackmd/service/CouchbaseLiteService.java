@@ -1,11 +1,18 @@
 package io.github.yuokada.hackmd.service;
 
+import com.couchbase.lite.Array;
 import com.couchbase.lite.CouchbaseLite;
+import com.couchbase.lite.DataSource;
 import com.couchbase.lite.Database;
 import com.couchbase.lite.DatabaseConfiguration;
+import com.couchbase.lite.Document;
+import com.couchbase.lite.Expression;
+import com.couchbase.lite.FullTextFunction;
 import com.couchbase.lite.FullTextIndex;
 import com.couchbase.lite.FullTextIndexItem;
 import com.couchbase.lite.IndexBuilder;
+import com.couchbase.lite.Meta;
+import com.couchbase.lite.MutableArray;
 import com.couchbase.lite.MutableDocument;
 import com.couchbase.lite.Query;
 import com.couchbase.lite.QueryBuilder;
@@ -98,7 +105,7 @@ public class CouchbaseLiteService {
       doc.setString("content", note.content());
 
       if (note.tags() != null) {
-        com.couchbase.lite.MutableArray tagsArray = new com.couchbase.lite.MutableArray();
+        MutableArray tagsArray = new MutableArray();
         for (String tag : note.tags()) {
           tagsArray.addString(tag);
         }
@@ -133,7 +140,7 @@ public class CouchbaseLiteService {
       if (database == null) {
         init();
       }
-      com.couchbase.lite.Document doc = database.getDocument(toDocId(noteId));
+      Document doc = database.getDocument(toDocId(noteId));
       if (doc == null) {
         return null;
       }
@@ -155,7 +162,7 @@ public class CouchbaseLiteService {
       if (database == null) {
         init();
       }
-      com.couchbase.lite.Document doc = database.getDocument(toDocId(noteId));
+      Document doc = database.getDocument(toDocId(noteId));
       if (doc == null) {
         return true; // Note doesn't exist, needs to be fetched
       }
@@ -191,17 +198,17 @@ public class CouchbaseLiteService {
 
       Query query =
           QueryBuilder.select(
-                  SelectResult.expression(com.couchbase.lite.Meta.id),
+                  SelectResult.expression(Meta.id),
                   SelectResult.property("id"),
                   SelectResult.property("shortId"),
                   SelectResult.property("title"),
                   SelectResult.property("content"),
                   SelectResult.property("tags"),
                   SelectResult.property("updatedAt"))
-              .from(com.couchbase.lite.DataSource.database(database))
+              .from(DataSource.database(database))
               .where(
-                  com.couchbase.lite.FullTextFunction.match(
-                      com.couchbase.lite.Expression.fullTextIndex(FTS_INDEX_NAME), searchTerm));
+                  FullTextFunction.match(
+                      Expression.fullTextIndex(FTS_INDEX_NAME), searchTerm));
 
       ResultSet results = query.execute();
       List<Map<String, Object>> searchResults = new ArrayList<>();
@@ -214,7 +221,7 @@ public class CouchbaseLiteService {
         resultMap.put("content", result.getString("content"));
         resultMap.put("updatedAt", result.getString("updatedAt"));
 
-        com.couchbase.lite.Array tagsArray = result.getArray("tags");
+        Array tagsArray = result.getArray("tags");
         if (tagsArray != null) {
           List<String> tags = new ArrayList<>();
           for (int i = 0; i < tagsArray.count(); i++) {
