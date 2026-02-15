@@ -1,6 +1,7 @@
 package io.github.yuokada.hackmd.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,7 @@ class SnippetUtilTest {
     String content = "This is a test hello";
     String snippet = SnippetUtil.generateSnippet(content, "hello");
     assertTrue(snippet.contains("[hello]"));
-    assertTrue(!snippet.endsWith("..."));
+      assertFalse(snippet.endsWith("..."));
   }
 
   @Test
@@ -60,7 +61,7 @@ class SnippetUtilTest {
   void testNewlineReplacement() {
     String content = "line one\nline two\ncontains hello\nline four";
     String snippet = SnippetUtil.generateSnippet(content, "hello");
-    assertTrue(!snippet.contains("\n"));
+      assertFalse(snippet.contains("\n"));
     assertTrue(snippet.contains("[hello]"));
   }
 
