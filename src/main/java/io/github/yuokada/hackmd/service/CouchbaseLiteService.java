@@ -15,6 +15,8 @@ import com.couchbase.lite.SelectResult;
 import io.github.yuokada.hackmd.model.NoteDetailResponse;
 import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,6 +48,8 @@ public class CouchbaseLiteService {
   public void init() {
     try {
       CouchbaseLite.init();
+      Path dbDir = Path.of(databasePath);
+      Files.createDirectories(dbDir);
       DatabaseConfiguration config = new DatabaseConfiguration();
       config.setDirectory(databasePath);
       database = new Database(DATABASE_NAME, config);
