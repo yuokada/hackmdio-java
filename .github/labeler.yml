@@ -1,0 +1,42 @@
+# Configuration for the GitHub Actions Labeler
+# https://github.com/actions/labeler
+
+# Documentation changes
+documentation:
+  - changed-files:
+    - any-glob-to-any-file: ['*.md', 'spec/**/*.md']
+
+# GitHub Actions and CI/CD
+github-actions:
+  - changed-files:
+    - any-glob-to-any-file: ['.github/**/*.yml', '.github/**/*.yaml']
+
+# Dependencies
+dependencies:
+  - changed-files:
+    - any-glob-to-any-file: ['pom.xml', '.mvn/**/*']
+
+# Java source code
+java:
+  - changed-files:
+    - any-glob-to-any-file: ['src/**/*.java']
+
+# Tests
+tests:
+  - changed-files:
+    - any-glob-to-any-file: ['src/test/**/*']
+
+# Configuration files
+configuration:
+  - changed-files:
+    - any-glob-to-any-file: 
+      - 'src/main/resources/**/*'
+      - '*.yaml'
+      - '*.yml'
+      - '.pre-commit-config.yaml'
+      - '.env.sample'
+
+# Build system
+build:
+  - changed-files:
+    - any-glob-to-any-file: ['pom.xml', 'mvnw*', '.mvn/**/*']
