@@ -16,6 +16,7 @@
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.5.3</surefire-plugin.version>
         <checkstyle.version>3.3.1</checkstyle.version>
+        <jacoco.version>0.8.12</jacoco.version>
     </properties>
 
     <dependencyManagement>
@@ -63,6 +64,11 @@
           <groupId>io.quarkiverse.wiremock</groupId>
           <artifactId>quarkus-wiremock-test</artifactId>
           <version>1.5.3</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>com.fasterxml.jackson.datatype</groupId>
+          <artifactId>jackson-datatype-jsr310</artifactId>
           <scope>test</scope>
         </dependency>
     </dependencies>
@@ -125,6 +131,26 @@
                         <phase>validate</phase>
                         <goals>
                             <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
                         </goals>
                     </execution>
                 </executions>
