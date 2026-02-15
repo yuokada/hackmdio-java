@@ -133,7 +133,7 @@ public class SearchCommand implements Runnable {
     }
     try {
       return formatter.format(Instant.parse(updatedAt));
-    } catch (Exception e) {
+    } catch (java.time.format.DateTimeParseException e) {
       return updatedAt;
     }
   }
