@@ -19,15 +19,12 @@ public class IndexCommand implements Runnable {
   private static final int MAX_RETRIES = 3;
   private static final int INITIAL_BACKOFF_MS = 6000;
 
-  @Inject
-  HackMdService hackMdService;
+  @Inject HackMdService hackMdService;
 
-  @Inject
-  CouchbaseLiteService couchbaseLiteService;
-    @Inject
-    Logger logger;
+  @Inject CouchbaseLiteService couchbaseLiteService;
+  @Inject Logger logger;
 
-    @Override
+  @Override
   public void run() {
     System.out.println("Starting indexing process...");
 
@@ -83,7 +80,8 @@ public class IndexCommand implements Runnable {
 
       // Display progress
       if (currentProgress % 10 == 0 || currentProgress == totalNotes) {
-        System.out.printf("Progress: %d/%d (%.1f%%)%n",
+        System.out.printf(
+            "Progress: %d/%d (%.1f%%)%n",
             currentProgress, totalNotes, (currentProgress * 100.0 / totalNotes));
       }
     }
@@ -107,7 +105,9 @@ public class IndexCommand implements Runnable {
         if (e.getResponse().getStatus() == 429 && retries < MAX_RETRIES) {
           retries++;
           long backoff = INITIAL_BACKOFF_MS * (1L << (retries - 1));
-          logger.error("Rate limited when fetching note %s. Retry %d/%d after %dms.".formatted(noteId, retries, MAX_RETRIES, backoff));
+          logger.error(
+              "Rate limited when fetching note %s. Retry %d/%d after %dms."
+                  .formatted(noteId, retries, MAX_RETRIES, backoff));
           try {
             Thread.sleep(backoff);
           } catch (InterruptedException ie) {

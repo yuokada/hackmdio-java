@@ -19,13 +19,13 @@ import picocli.CommandLine.Option;
 @Command(name = "list", description = "List notes")
 public class ListCommand implements Runnable {
 
-  @Inject
-  HackMdService hackMdService;
+  @Inject HackMdService hackMdService;
 
-  @Inject
-  ObjectMapper objectMapper; // Inject ObjectMapper for JSON serialization
+  @Inject ObjectMapper objectMapper; // Inject ObjectMapper for JSON serialization
 
-  @Option(names = {"--json"}, description = "Output notes in JSON format.")
+  @Option(
+      names = {"--json"},
+      description = "Output notes in JSON format.")
   boolean jsonOutput;
 
   private static final DateTimeFormatter formatter =
@@ -41,8 +41,8 @@ public class ListCommand implements Runnable {
 
     List<Note> notes = new ArrayList<>(notesSet);
     // Sort by publishedAt descending, with nulls at the end.
-    notes.sort(Comparator.comparing(Note::publishedAt,
-        Comparator.nullsLast(Comparator.reverseOrder())));
+    notes.sort(
+        Comparator.comparing(Note::publishedAt, Comparator.nullsLast(Comparator.reverseOrder())));
 
     if (jsonOutput) {
       try {
@@ -68,13 +68,13 @@ public class ListCommand implements Runnable {
       // Header
       System.out.format(format, "ID", "Title", "Published At");
       // Separator
-      System.out.format(format, "-".repeat(maxIdLength), "-".repeat(maxTitleLength),
-          "-".repeat(19));
+      System.out.format(
+          format, "-".repeat(maxIdLength), "-".repeat(maxTitleLength), "-".repeat(19));
 
       // Rows
       for (Note note : notes) {
-        String publishedAtStr = (note.publishedAt() == null) ? "N/A"
-            : formatter.format(note.publishedAt());
+        String publishedAtStr =
+            (note.publishedAt() == null) ? "N/A" : formatter.format(note.publishedAt());
         System.out.format(format, note.shortId(), note.title(), publishedAtStr);
       }
     }

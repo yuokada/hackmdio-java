@@ -63,10 +63,9 @@ public class CouchbaseLiteService {
         init();
       }
       // Create FTS index on content and title fields
-      FullTextIndex ftsIndex = IndexBuilder.fullTextIndex(
-          FullTextIndexItem.property("content"),
-          FullTextIndexItem.property("title")
-      );
+      FullTextIndex ftsIndex =
+          IndexBuilder.fullTextIndex(
+              FullTextIndexItem.property("content"), FullTextIndexItem.property("title"));
       database.createIndex(FTS_INDEX_NAME, ftsIndex);
     } catch (Exception e) {
       // Index might already exist, which is fine
@@ -182,20 +181,19 @@ public class CouchbaseLiteService {
         init();
       }
 
-      Query query = QueryBuilder.select(
-              SelectResult.expression(com.couchbase.lite.Meta.id),
-              SelectResult.property("id"),
-              SelectResult.property("shortId"),
-              SelectResult.property("title"),
-              SelectResult.property("content"),
-              SelectResult.property("tags"),
-              SelectResult.property("updatedAt")
-          )
-          .from(com.couchbase.lite.DataSource.database(database))
-          .where(com.couchbase.lite.FullTextFunction.match(
-              com.couchbase.lite.Expression.fullTextIndex(FTS_INDEX_NAME),
-              searchTerm
-          ));
+      Query query =
+          QueryBuilder.select(
+                  SelectResult.expression(com.couchbase.lite.Meta.id),
+                  SelectResult.property("id"),
+                  SelectResult.property("shortId"),
+                  SelectResult.property("title"),
+                  SelectResult.property("content"),
+                  SelectResult.property("tags"),
+                  SelectResult.property("updatedAt"))
+              .from(com.couchbase.lite.DataSource.database(database))
+              .where(
+                  com.couchbase.lite.FullTextFunction.match(
+                      com.couchbase.lite.Expression.fullTextIndex(FTS_INDEX_NAME), searchTerm));
 
       ResultSet results = query.execute();
       List<Map<String, Object>> searchResults = new ArrayList<>();

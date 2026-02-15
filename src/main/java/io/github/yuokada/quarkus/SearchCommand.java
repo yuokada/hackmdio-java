@@ -20,25 +20,24 @@ import picocli.CommandLine.Parameters;
 @Command(name = "search", description = "Search notes in local database")
 public class SearchCommand implements Runnable {
 
-  @Inject
-  CouchbaseLiteService couchbaseLiteService;
+  @Inject CouchbaseLiteService couchbaseLiteService;
 
-  @Inject
-  ObjectMapper objectMapper;
+  @Inject ObjectMapper objectMapper;
 
   @Parameters(index = "0", description = "The search term.", paramLabel = "SEARCH_TERM")
   String searchTerm;
 
-  @Option(names = {"--json"}, description = "Output results in JSON format.")
+  @Option(
+      names = {"--json"},
+      description = "Output results in JSON format.")
   boolean jsonOutput;
 
   private static final DateTimeFormatter formatter =
       DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
 
-    @Inject
-    Logger logger;
+  @Inject Logger logger;
 
-    @Override
+  @Override
   public void run() {
     System.out.printf("Searching for: \"%s\"%n%n", searchTerm);
 
@@ -56,7 +55,7 @@ public class SearchCommand implements Runnable {
         System.out.println(
             objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(results));
       } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
-          logger.error("Error serializing results to JSON", e);
+        logger.error("Error serializing results to JSON", e);
       }
       return;
     }
@@ -72,8 +71,7 @@ public class SearchCommand implements Runnable {
       String shortId = (String) result.get("shortId");
       String title = (String) result.get("title");
       String tagsStr = formatTags(result);
-      String snippet = SnippetUtil.generateSnippet(
-          (String) result.get("content"), searchTerm);
+      String snippet = SnippetUtil.generateSnippet((String) result.get("content"), searchTerm);
 
       if (shortId != null && shortId.length() > maxIdLength) {
         maxIdLength = shortId.length();
@@ -89,14 +87,29 @@ public class SearchCommand implements Runnable {
       }
     }
 
-    String format = "| %-" + maxIdLength + "s | %-" + maxTitleLength + "s | %-"
-        + maxTagsLength + "s | %-" + dateLength + "s | %-" + maxSnippetLength + "s |%n";
+    String format =
+        "| %-"
+            + maxIdLength
+            + "s | %-"
+            + maxTitleLength
+            + "s | %-"
+            + maxTagsLength
+            + "s | %-"
+            + dateLength
+            + "s | %-"
+            + maxSnippetLength
+            + "s |%n";
 
     // Header
     System.out.format(format, "ID", "Title", "Tags", "Updated At", "Snippet");
     // Separator
-    System.out.format(format, "-".repeat(maxIdLength), "-".repeat(maxTitleLength),
-        "-".repeat(maxTagsLength), "-".repeat(dateLength), "-".repeat(maxSnippetLength));
+    System.out.format(
+        format,
+        "-".repeat(maxIdLength),
+        "-".repeat(maxTitleLength),
+        "-".repeat(maxTagsLength),
+        "-".repeat(dateLength),
+        "-".repeat(maxSnippetLength));
 
     // Rows
     for (Map<String, Object> result : results) {
@@ -104,10 +117,10 @@ public class SearchCommand implements Runnable {
       String title = (String) result.get("title");
       String tagsStr = formatTags(result);
       String updatedAtStr = formatUpdatedAt(result);
-      String snippet = SnippetUtil.generateSnippet(
-          (String) result.get("content"), searchTerm);
+      String snippet = SnippetUtil.generateSnippet((String) result.get("content"), searchTerm);
 
-      System.out.format(format,
+      System.out.format(
+          format,
           shortId != null ? shortId : "N/A",
           title != null ? title : "N/A",
           tagsStr,

@@ -10,10 +10,7 @@ public record UserProfile(
     String id,
     String email,
     String name,
-    @JsonProperty("userPath")
-    String userPath,
+    @JsonProperty("userPath") String userPath,
     String photo,
     List<Team> teams,
-    boolean upgraded
-) {
-}
+    boolean upgraded) {}

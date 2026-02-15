@@ -11,52 +11,44 @@ public record IndexedNote(
     String originalId,
     String title,
     List<String> tags,
-    @JsonProperty("createdAt")
-    Instant createdAt,
-    @JsonProperty("titleUpdatedAt")
-    Instant titleUpdatedAt,
-    @JsonProperty("tagsUpdatedAt")
-    Instant tagsUpdatedAt,
+    @JsonProperty("createdAt") Instant createdAt,
+    @JsonProperty("titleUpdatedAt") Instant titleUpdatedAt,
+    @JsonProperty("tagsUpdatedAt") Instant tagsUpdatedAt,
     String publishType,
-    @JsonProperty("publishedAt")
-    Instant publishedAt,
+    @JsonProperty("publishedAt") Instant publishedAt,
     String permalink,
     String publishLink,
     String shortId,
     String content,
-    @JsonProperty("lastChangedAt")
-    Instant lastChangedAt,
-    @JsonProperty("lastChangeUser")
-    LastChangeUser lastChangeUser,
+    @JsonProperty("lastChangedAt") Instant lastChangedAt,
+    @JsonProperty("lastChangeUser") LastChangeUser lastChangeUser,
     String userPath,
     String teamPath,
     String readPermission,
-    String writePermission
-) {
+    String writePermission) {
 
-    private static final String ID_PREFIX = "note::";
+  private static final String ID_PREFIX = "note::";
 
-    public static IndexedNote fromNote(NoteDetailResponse note) {
-        return new IndexedNote(
-            ID_PREFIX + note.id(),
-            note.id(),
-            note.title(),
-            note.tags(),
-            note.createdAt(),
-            note.titleUpdatedAt(),
-            note.tagsUpdatedAt(),
-            note.publishType(),
-            note.publishedAt(),
-            note.permalink(),
-            note.publishLink(),
-            note.shortId(),
-            note.content(),
-            note.lastChangedAt(),
-            note.lastChangeUser(),
-            note.userPath(),
-            note.teamPath(),
-            note.readPermission(),
-            note.writePermission()
-        );
-    }
+  public static IndexedNote fromNote(NoteDetailResponse note) {
+    return new IndexedNote(
+        ID_PREFIX + note.id(),
+        note.id(),
+        note.title(),
+        note.tags(),
+        note.createdAt(),
+        note.titleUpdatedAt(),
+        note.tagsUpdatedAt(),
+        note.publishType(),
+        note.publishedAt(),
+        note.permalink(),
+        note.publishLink(),
+        note.shortId(),
+        note.content(),
+        note.lastChangedAt(),
+        note.lastChangeUser(),
+        note.userPath(),
+        note.teamPath(),
+        note.readPermission(),
+        note.writePermission());
+  }
 }

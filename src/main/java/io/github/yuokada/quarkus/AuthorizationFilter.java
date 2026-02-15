@@ -13,21 +13,21 @@ import org.jboss.logging.Logger;
 @ApplicationScoped
 public class AuthorizationFilter implements ClientRequestFilter {
 
-    private static final Logger LOGGER = Logger.getLogger(AuthorizationFilter.class.getName());
+  private static final Logger LOGGER = Logger.getLogger(AuthorizationFilter.class.getName());
 
-    private static final String BEARER_PREFIX = "Bearer ";
+  private static final String BEARER_PREFIX = "Bearer ";
 
-    @Inject
-    @ConfigProperty(name = "hackmd.api.token", defaultValue = "")
-    String apiToken;
+  @Inject
+  @ConfigProperty(name = "hackmd.api.token", defaultValue = "")
+  String apiToken;
 
-    @Override
-    public void filter(ClientRequestContext requestContext) {
-        if (apiToken != null && !apiToken.isBlank()) {
-            String authorization = BEARER_PREFIX + apiToken;
-            requestContext.getHeaders().add("Authorization", authorization);
-        } else {
-            LOGGER.warn("API token is not set. Authorization header will not be added.");
-        }
+  @Override
+  public void filter(ClientRequestContext requestContext) {
+    if (apiToken != null && !apiToken.isBlank()) {
+      String authorization = BEARER_PREFIX + apiToken;
+      requestContext.getHeaders().add("Authorization", authorization);
+    } else {
+      LOGGER.warn("API token is not set. Authorization header will not be added.");
     }
+  }
 }

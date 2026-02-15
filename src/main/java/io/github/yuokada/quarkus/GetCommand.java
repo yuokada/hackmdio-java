@@ -12,8 +12,7 @@ import picocli.CommandLine.Parameters;
 @Command(name = "get", description = "Get a specific note by ID")
 public class GetCommand implements Runnable {
 
-  @Inject
-  HackMdService hackMdService;
+  @Inject HackMdService hackMdService;
 
   @Parameters(index = "0", description = "The ID of the note to get.", paramLabel = "NOTE_ID")
   String noteId;

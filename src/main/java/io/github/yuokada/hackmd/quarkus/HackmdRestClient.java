@@ -49,9 +49,7 @@ public interface HackmdRestClient {
   @Path("/notes/{noteId}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  NoteDetailResponse updateNote(
-      @PathParam("noteId") String noteId,
-      UpdateNoteRequest request);
+  NoteDetailResponse updateNote(@PathParam("noteId") String noteId, UpdateNoteRequest request);
 
   @GET
   @Path("/teams")
@@ -68,15 +66,13 @@ public interface HackmdRestClient {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   NoteDetailResponse createTeamNote(
-      @PathParam("teamPath") String teamPath,
-      CreateNoteRequest request);
+      @PathParam("teamPath") String teamPath, CreateNoteRequest request);
 
   @GET
   @Path("/teams/{teamPath}/notes/{noteId}")
   @Produces(MediaType.APPLICATION_JSON)
   NoteDetailResponse getTeamNote(
-      @PathParam("teamPath") String teamPath,
-      @PathParam("noteId") String noteId);
+      @PathParam("teamPath") String teamPath, @PathParam("noteId") String noteId);
 
   @PATCH
   @Path("/teams/{teamPath}/notes/{noteId}")
@@ -89,9 +85,7 @@ public interface HackmdRestClient {
 
   @DELETE
   @Path("/teams/{teamPath}/notes/{noteId}")
-  void deleteTeamNote(
-      @PathParam("teamPath") String teamPath,
-      @PathParam("noteId") String noteId);
+  void deleteTeamNote(@PathParam("teamPath") String teamPath, @PathParam("noteId") String noteId);
 
   @GET
   @Path("/me")

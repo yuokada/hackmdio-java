@@ -8,8 +8,13 @@ import picocli.CommandLine.Command;
  * It serves as the entry point and aggregates all subcommands.
  */
 @TopCommand
-@Command(mixinStandardHelpOptions = true,
-    subcommands = {ListCommand.class, CreateCommand.class, GetCommand.class,
-        IndexCommand.class, SearchCommand.class})
-public class HackmdCommand {
-}
+@Command(
+    mixinStandardHelpOptions = true,
+    subcommands = {
+      ListCommand.class,
+      CreateCommand.class,
+      GetCommand.class,
+      IndexCommand.class,
+      SearchCommand.class
+    })
+public class HackmdCommand {}

@@ -9,9 +9,4 @@ package io.github.yuokada.quarkus.model;
  * @param writePermission The write permission for the note.
  */
 public record CreateNoteRequest(
-    String title,
-    String content,
-    String readPermission,
-    String writePermission
-) {
-}
+    String title, String content, String readPermission, String writePermission) {}

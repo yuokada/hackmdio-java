@@ -17,9 +17,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 @ApplicationScoped
 public class HackMdService {
 
-  @Inject
-  @RestClient
-  HackMdApi hackMdApi;
+  @Inject @RestClient HackMdApi hackMdApi;
 
   /**
    * Lists all notes from the API and synchronizes them with the local database.
@@ -33,8 +31,8 @@ public class HackMdService {
   }
 
   public Set<NoteDetailResponse> listNoteDetails() {
-      // TODO: Implement pagination if needed
-      return hackMdApi.getNotes();
+    // TODO: Implement pagination if needed
+    return hackMdApi.getNotes();
   }
 
   /**

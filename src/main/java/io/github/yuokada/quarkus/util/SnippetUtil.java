@@ -22,8 +22,7 @@ public final class SnippetUtil {
    * @return A snippet string with the match highlighted in brackets.
    */
   public static String generateSnippet(String content, String searchTerm) {
-    if (content == null || content.isEmpty()
-        || searchTerm == null || searchTerm.isEmpty()) {
+    if (content == null || content.isEmpty() || searchTerm == null || searchTerm.isEmpty()) {
       return NA;
     }
 

@@ -16,8 +16,5 @@ public record Team(
     String description,
     TeamVisibility visibility,
     boolean upgraded,
-    @JsonProperty("createdAt")
-    @JsonDeserialize(using = EpochMillisInstantDeserializer.class)
-    Instant createdAt
-) {
-}
+    @JsonProperty("createdAt") @JsonDeserialize(using = EpochMillisInstantDeserializer.class)
+        Instant createdAt) {}

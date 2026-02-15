@@ -12,13 +12,18 @@ import picocli.CommandLine.Option;
 @Command(name = "create", description = "Create a new note")
 public class CreateCommand implements Runnable {
 
-  @Inject
-  HackMdService hackMdService;
+  @Inject HackMdService hackMdService;
 
-  @Option(names = {"-t", "--title"}, description = "Title of the note", required = true)
+  @Option(
+      names = {"-t", "--title"},
+      description = "Title of the note",
+      required = true)
   String title;
 
-  @Option(names = {"-c", "--content"}, description = "Content of the note", defaultValue = "")
+  @Option(
+      names = {"-c", "--content"},
+      description = "Content of the note",
+      defaultValue = "")
   String content;
 
   @Override

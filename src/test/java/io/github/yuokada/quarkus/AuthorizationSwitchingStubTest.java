@@ -6,6 +6,6 @@ import io.quarkus.test.junit.QuarkusTest;
 // @ConnectWireMock
 class AuthorizationSwitchingStubTest {
 
-    // WireMock wiremock;
+  // WireMock wiremock;
 
 }

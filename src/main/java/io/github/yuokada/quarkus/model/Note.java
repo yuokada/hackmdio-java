@@ -20,11 +20,6 @@ public record Note(
     String title,
     String content,
     List<String> tags,
-    @JsonProperty("publishedAt")
-    Instant publishedAt,
-    @JsonProperty("shortId")
-    String shortId,
-    @JsonProperty("lastChangedAt")
-    Instant lastChangedAt
-) {
-}
+    @JsonProperty("publishedAt") Instant publishedAt,
+    @JsonProperty("shortId") String shortId,
+    @JsonProperty("lastChangedAt") Instant lastChangedAt) {}

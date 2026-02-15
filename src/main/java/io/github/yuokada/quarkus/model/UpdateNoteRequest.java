@@ -12,6 +12,4 @@ public record UpdateNoteRequest(
     String readPermission,
     String writePermission,
     String permalink,
-    String parentFolderId
-) {
-}
+    String parentFolderId) {}

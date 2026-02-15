@@ -14,7 +14,8 @@ class NoteDetailResponseTest {
   void deserializeEpochMillisJson() throws Exception {
     ObjectMapper mapper = new ObjectMapper();
 
-    String json = """
+    String json =
+        """
         {
           "id": "demo-long-id",
           "title": "demo contents title",
@@ -69,7 +70,8 @@ class NoteDetailResponseTest {
   void deserializeIsoTimestampsFallback() throws Exception {
     ObjectMapper mapper = new ObjectMapper();
 
-    String json = """
+    String json =
+        """
         {
           "id": "fallback",
           "title": "iso timestamps",
