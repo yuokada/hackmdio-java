@@ -1,6 +1,7 @@
 package io.github.yuokada.quarkus;
 
-import io.github.yuokada.quarkus.model.Note;
+import io.github.yuokada.quarkus.model.NoteDetailResponse;
+import io.github.yuokada.quarkus.service.HackMdService;
 import jakarta.inject.Inject;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
@@ -19,7 +20,7 @@ public class GetCommand implements Runnable {
 
   @Override
   public void run() {
-    Note note = hackMdService.getNote(noteId);
+    NoteDetailResponse note = hackMdService.getNote(noteId);
     System.out.printf("Title: %s%n", note.title());
     System.out.println("---");
     System.out.println(note.content());

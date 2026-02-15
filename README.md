@@ -91,6 +91,41 @@ Dependency updates are monitored by Dependabot (`.github/dependabot.yml`), which
 
 The application exposes the following subcommands:
 
-- `list`: List notes
-- `create`: Create a new note
-- `get`: Get a specific note by ID
+- `list`: List notes from HackMD API
+- `create`: Create a new note on HackMD
+- `get`: Get a specific note by ID from HackMD API
+- `index`: Index notes from HackMD to local Couchbase Lite database for offline search
+- `search`: Search notes in local database using full-text search
+
+### Usage Examples
+
+```bash
+# List all notes from HackMD
+java -jar target/hackmd-1.0.0-SNAPSHOT.jar list
+
+# Create a new note
+java -jar target/hackmd-1.0.0-SNAPSHOT.jar create --title "My Note" --content "Hello World"
+
+# Get a specific note
+java -jar target/hackmd-1.0.0-SNAPSHOT.jar get <note-id>
+
+# Index all notes to local database
+java -jar target/hackmd-1.0.0-SNAPSHOT.jar index
+
+# Search notes in local database
+java -jar target/hackmd-1.0.0-SNAPSHOT.jar search "search term"
+```
+
+### Index and Search Features
+
+The `index` command synchronizes your HackMD notes to a local Couchbase Lite database, enabling fast offline search capabilities:
+
+- **Smart Sync**: Only downloads new or updated notes based on timestamps
+- **Progress Tracking**: Shows real-time progress during indexing
+- **Summary Report**: Displays statistics about new, updated, and skipped notes
+
+The `search` command performs full-text search on locally indexed notes:
+
+- **Fast Search**: Uses FTS (Full-Text Search) index for quick results
+- **Offline**: Works without internet connection after indexing
+- **Content Search**: Searches both title and content fields

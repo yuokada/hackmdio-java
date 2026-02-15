@@ -1,12 +1,14 @@
-package io.github.yuokada.quarkus;
+package io.github.yuokada.quarkus.service;
 
+import io.github.yuokada.quarkus.HackMdApi;
 import io.github.yuokada.quarkus.model.CreateNoteRequest;
 import io.github.yuokada.quarkus.model.Note;
-import io.github.yuokada.quarkus.model.NoteEntity;
+import io.github.yuokada.quarkus.model.NoteDetailResponse;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 /**
@@ -19,9 +21,6 @@ public class HackMdService {
   @RestClient
   HackMdApi hackMdApi;
 
-  @Inject
-  NoteRepository noteRepository;
-
   /**
    * Lists all notes from the API and synchronizes them with the local database.
    *
@@ -29,20 +28,13 @@ public class HackMdService {
    */
   @Transactional
   public Set<Note> listNotes() {
-    Set<Note> notes = hackMdApi.getNotes();
+    Set<NoteDetailResponse> notes = hackMdApi.getNotes();
+    return notes.stream().map(NoteDetailResponse::toNote).collect(Collectors.toSet());
+  }
 
-    for (Note note : notes) {
-      NoteEntity entity = noteRepository.findById(note.id());
-      if (entity == null) {
-        entity = new NoteEntity();
-        entity.id = note.id();
-      }
-      entity.shortId = note.shortId();
-      entity.title = note.title();
-      entity.publishedAt = note.publishedAt();
-      noteRepository.persist(entity);
-    }
-    return notes;
+  public Set<NoteDetailResponse> listNoteDetails() {
+      // TODO: Implement pagination if needed
+      return hackMdApi.getNotes();
   }
 
   /**
@@ -56,10 +48,6 @@ public class HackMdService {
   public Note createNote(String title, String content) {
     var request = new CreateNoteRequest(title, content, "owner", "owner");
     Note newNote = hackMdApi.createNote(request);
-
-    NoteEntity entity = NoteEntity.from(newNote);
-    noteRepository.persist(entity);
-
     return newNote;
   }
 
@@ -70,19 +58,8 @@ public class HackMdService {
    * @return The note.
    */
   @Transactional
-  public Note getNote(String noteId) {
-    Note note = hackMdApi.getNote(noteId);
-
-    NoteEntity entity = noteRepository.findById(note.id());
-    if (entity == null) {
-      entity = new NoteEntity();
-      entity.id = note.id();
-    }
-    entity.shortId = note.shortId();
-    entity.title = note.title();
-    entity.publishedAt = note.publishedAt();
-    noteRepository.persist(entity);
-
+  public NoteDetailResponse getNote(String noteId) {
+    NoteDetailResponse note = hackMdApi.getNote(noteId);
     return note;
   }
 }
