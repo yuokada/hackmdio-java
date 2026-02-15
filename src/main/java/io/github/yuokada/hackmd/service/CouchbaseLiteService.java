@@ -50,6 +50,9 @@ public class CouchbaseLiteService {
       CouchbaseLite.init();
       Path dbDir = Path.of(databasePath);
       Files.createDirectories(dbDir);
+if (dbDir.getFileSystem().supportedFileAttributeViews().contains("posix")) {
+    java.nio.file.Files.setPosixFilePermissions(dbDir, java.nio.file.attribute.PosixFilePermissions.fromString("rwx------"));
+}
       DatabaseConfiguration config = new DatabaseConfiguration();
       config.setDirectory(databasePath);
       database = new Database(DATABASE_NAME, config);
