@@ -20,7 +20,7 @@ class IndexedNoteTest {
 
   @Test
   void fromNoteCopiesAllFields() {
-    Instant now = Instant.now();
+    Instant now = Instant.parse("2024-08-15T10:00:00Z");
     NoteDetailResponse.LastChangeUser user =
         new NoteDetailResponse.LastChangeUser("user1", "path1", "photo.jpg", "bio");
     NoteDetailResponse note = new NoteDetailResponse(

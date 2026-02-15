@@ -17,7 +17,6 @@
         <surefire-plugin.version>3.5.3</surefire-plugin.version>
         <checkstyle.version>3.3.1</checkstyle.version>
         <jacoco.version>0.8.12</jacoco.version>
-        <jackson.version>2.20.1</jackson.version>
     </properties>
 
     <dependencyManagement>
@@ -45,11 +44,6 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
         </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.datatype</groupId>
-        <artifactId>jackson-datatype-jsr310</artifactId>
-        <version>${jackson.version}</version>
-      </dependency>
         <dependency>
           <groupId>com.couchbase.lite</groupId>
           <artifactId>couchbase-lite-java</artifactId>
@@ -70,6 +64,11 @@
           <groupId>io.quarkiverse.wiremock</groupId>
           <artifactId>quarkus-wiremock-test</artifactId>
           <version>1.5.3</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>com.fasterxml.jackson.datatype</groupId>
+          <artifactId>jackson-datatype-jsr310</artifactId>
           <scope>test</scope>
         </dependency>
     </dependencies>
