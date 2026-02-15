@@ -33,7 +33,6 @@ public class OpenCommand implements Runnable {
       }
 
       openInBrowser(permalink);
-      System.out.println("Opened: " + permalink);
     } catch (Exception e) {
       System.err.println("Error opening note: " + e.getMessage());
     }
@@ -41,11 +40,12 @@ public class OpenCommand implements Runnable {
 
   private void openInBrowser(String url) throws IOException, URISyntaxException {
     if (!Desktop.isDesktopSupported() || !Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-      System.err.println("Error: Desktop browsing is not supported on this system.");
+      System.out.println("Desktop browsing is not available on this system.");
       System.out.println("Please open the following URL manually: " + url);
       return;
     }
 
     Desktop.getDesktop().browse(new URI(url));
+    System.out.println("Opened: " + url);
   }
 }
