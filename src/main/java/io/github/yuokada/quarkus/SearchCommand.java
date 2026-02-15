@@ -9,6 +9,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import org.jboss.logging.Logger;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -34,7 +35,10 @@ public class SearchCommand implements Runnable {
   private static final DateTimeFormatter formatter =
       DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
 
-  @Override
+    @Inject
+    Logger logger;
+
+    @Override
   public void run() {
     System.out.printf("Searching for: \"%s\"%n%n", searchTerm);
 
@@ -52,7 +56,7 @@ public class SearchCommand implements Runnable {
         System.out.println(
             objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(results));
       } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
-        System.err.println("Error serializing results to JSON: " + e.getMessage());
+          logger.error("Error serializing results to JSON", e);
       }
       return;
     }
