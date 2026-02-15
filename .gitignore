@@ -48,3 +48,4 @@ nb-configuration.xml
 hackmd_notes.db
 hackmd_notes/
 *.cblite2/
+CouchbaseLiteTemp/

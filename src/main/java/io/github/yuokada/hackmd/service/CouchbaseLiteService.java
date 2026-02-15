@@ -12,6 +12,7 @@ import com.couchbase.lite.FullTextFunction;
 import com.couchbase.lite.FullTextIndex;
 import com.couchbase.lite.FullTextIndexItem;
 import com.couchbase.lite.IndexBuilder;
+import com.couchbase.lite.LogLevel;
 import com.couchbase.lite.Meta;
 import com.couchbase.lite.MutableArray;
 import com.couchbase.lite.MutableDocument;
@@ -58,6 +59,8 @@ public class CouchbaseLiteService {
   public void init() {
     try {
       CouchbaseLite.init();
+      // Disable Couchbase Lite logging
+      Database.log.getConsole().setLevel(LogLevel.NONE);
       Path dbDir = Path.of(databasePath);
       Files.createDirectories(dbDir);
       if (dbDir.getFileSystem().supportedFileAttributeViews().contains("posix")) {
