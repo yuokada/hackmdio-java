@@ -51,7 +51,7 @@ public class SearchCommand implements Runnable {
       try {
         System.out.println(
             objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(results));
-      } catch (Exception e) {
+      } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
         System.err.println("Error serializing results to JSON: " + e.getMessage());
       }
       return;
