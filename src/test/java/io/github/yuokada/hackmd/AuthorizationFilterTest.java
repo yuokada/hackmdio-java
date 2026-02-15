@@ -32,7 +32,7 @@ class AuthorizationFilterTest {
   }
 
   @Test
-  void testFilterAddsAuthorizationHeaderWithValidToken() throws IOException {
+  void testFilterAddsAuthorizationHeaderWithValidToken() {
     // Given
     filter.apiToken = "test-api-token-12345";
 
@@ -46,7 +46,7 @@ class AuthorizationFilterTest {
 
   @Test
   @DisplayName("Test filter does not add header when token is null")
-  void testFilterDoesNotAddHeaderWhenTokenIsNull() throws IOException {
+  void testFilterDoesNotAddHeaderWhenTokenIsNull() {
     filter.apiToken = null;
     filter.filter(requestContext);
     assertFalse(headers.containsKey("Authorization"));
@@ -54,7 +54,7 @@ class AuthorizationFilterTest {
 
   @Test
   @DisplayName("Test filter does not add header when token is empty")
-  void testFilterDoesNotAddHeaderWhenTokenIsEmpty() throws IOException {
+  void testFilterDoesNotAddHeaderWhenTokenIsEmpty() {
     // Given
     filter.apiToken = "";
 
@@ -67,14 +67,14 @@ class AuthorizationFilterTest {
 
   @Test
   @DisplayName("Test filter does not add header when token is blank")
-  void testFilterDoesNotAddHeaderWhenTokenIsBlank() throws IOException {
+  void testFilterDoesNotAddHeaderWhenTokenIsBlank() {
     filter.apiToken = "   ";
     filter.filter(requestContext);
     assertFalse(headers.containsKey("Authorization"));
   }
 
   @Test
-  void testFilterAddsHeaderWithCorrectBearerPrefix() throws IOException {
+  void testFilterAddsHeaderWithCorrectBearerPrefix() {
     filter.apiToken = "my-token";
     filter.filter(requestContext);
     assertEquals("Bearer my-token", headers.getFirst("Authorization"));
@@ -82,7 +82,7 @@ class AuthorizationFilterTest {
 
   @Test
   @DisplayName("Test filter handles token with leading and trailing spaces")
-  void testFilterHandlesTokenWithSpaces() throws IOException {
+  void testFilterHandlesTokenWithSpaces() {
     filter.apiToken = "token with spaces";
     filter.filter(requestContext);
     assertEquals("Bearer token with spaces", headers.getFirst("Authorization"));
@@ -90,7 +90,7 @@ class AuthorizationFilterTest {
 
   @Test
   @DisplayName("Test filter handles special characters in token")
-  void testFilterHandlesSpecialCharactersInToken() throws IOException {
+  void testFilterHandlesSpecialCharactersInToken() {
     // Given
     filter.apiToken = "token!@#$%^&*()_+-=[]{}|;':,.<>?";
 
