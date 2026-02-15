@@ -5,6 +5,7 @@ import io.github.yuokada.quarkus.model.NoteDetailResponse;
 import io.github.yuokada.quarkus.service.CouchbaseLiteService;
 import io.github.yuokada.quarkus.service.HackMdService;
 import jakarta.inject.Inject;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.ClientWebApplicationException;
 import picocli.CommandLine.Command;
 
@@ -23,8 +24,10 @@ public class IndexCommand implements Runnable {
 
   @Inject
   CouchbaseLiteService couchbaseLiteService;
+    @Inject
+    Logger logger;
 
-  @Override
+    @Override
   public void run() {
     System.out.println("Starting indexing process...");
 
@@ -75,7 +78,7 @@ public class IndexCommand implements Runnable {
         }
       } catch (Exception e) {
         errorNotes++;
-        System.err.printf("Failed to index note %s: %s%n", note.originalId(), e.getMessage());
+        logger.error("Failed to index note %s: %s".formatted(note.originalId(), e.getMessage()));
       }
 
       // Display progress
@@ -104,8 +107,7 @@ public class IndexCommand implements Runnable {
         if (e.getResponse().getStatus() == 429 && retries < MAX_RETRIES) {
           retries++;
           long backoff = INITIAL_BACKOFF_MS * (1L << (retries - 1));
-          System.err.printf("Rate limited (429). Retry %d/%d after %dms...%n",
-              retries, MAX_RETRIES, backoff);
+          logger.error("Rate limited when fetching note %s. Retry %d/%d after %dms.".formatted(noteId, retries, MAX_RETRIES, backoff));
           try {
             Thread.sleep(backoff);
           } catch (InterruptedException ie) {
