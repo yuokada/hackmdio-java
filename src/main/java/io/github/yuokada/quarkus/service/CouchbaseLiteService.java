@@ -187,7 +187,9 @@ public class CouchbaseLiteService {
               SelectResult.property("id"),
               SelectResult.property("shortId"),
               SelectResult.property("title"),
-              SelectResult.property("content")
+              SelectResult.property("content"),
+              SelectResult.property("tags"),
+              SelectResult.property("updatedAt")
           )
           .from(com.couchbase.lite.DataSource.database(database))
           .where(com.couchbase.lite.FullTextFunction.match(
@@ -204,6 +206,17 @@ public class CouchbaseLiteService {
         resultMap.put("shortId", result.getString("shortId"));
         resultMap.put("title", result.getString("title"));
         resultMap.put("content", result.getString("content"));
+        resultMap.put("updatedAt", result.getString("updatedAt"));
+
+        com.couchbase.lite.Array tagsArray = result.getArray("tags");
+        if (tagsArray != null) {
+          List<String> tags = new ArrayList<>();
+          for (int i = 0; i < tagsArray.count(); i++) {
+            tags.add(tagsArray.getString(i));
+          }
+          resultMap.put("tags", tags);
+        }
+
         searchResults.add(resultMap);
       }
 
