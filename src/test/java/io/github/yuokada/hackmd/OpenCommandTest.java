@@ -1,7 +1,11 @@
 package io.github.yuokada.hackmd;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.github.yuokada.hackmd.model.NoteDetailResponse;
@@ -29,7 +33,7 @@ class OpenCommandTest {
     System.setOut(new PrintStream(outputCapture));
     System.setErr(new PrintStream(errorCapture));
 
-    command = new OpenCommand();
+    command = spy(new OpenCommand());
     command.hackMdService = mock(HackMdService.class);
   }
 
@@ -40,7 +44,7 @@ class OpenCommandTest {
   }
 
   @Test
-  void runWithValidPermalink() {
+  void runWithValidPermalink() throws Exception {
     NoteDetailResponse note =
         new NoteDetailResponse(
             "test-id",
@@ -64,14 +68,11 @@ class OpenCommandTest {
 
     command.noteId = "test-id";
     when(command.hackMdService.getNote("test-id")).thenReturn(note);
+    doNothing().when(command).openInBrowser(anyString());
 
     command.run();
 
-    String output = outputCapture.toString();
-    // Either opened successfully or shows manual URL (depending on Desktop support)
-    assertTrue(
-        output.contains("https://hackmd.io/@user/test-note") || output.contains("Opened:"),
-        "Output should contain the publish link URL");
+    verify(command).openInBrowser("https://hackmd.io/@user/test-note");
   }
 
   @Test

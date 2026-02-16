@@ -38,7 +38,7 @@ public class OpenCommand implements Runnable {
     }
   }
 
-  private void openInBrowser(String url) throws IOException, URISyntaxException {
+  void openInBrowser(String url) throws IOException, URISyntaxException {
     if (!Desktop.isDesktopSupported() || !Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
       System.out.println("Desktop browsing is not available on this system.");
       System.out.println("Please open the following URL manually: " + url);
