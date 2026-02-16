@@ -15,6 +15,7 @@ import picocli.CommandLine.Command;
       CreateCommand.class,
       GetCommand.class,
       IndexCommand.class,
-      SearchCommand.class
+      SearchCommand.class,
+      OpenCommand.class
     })
 public class HackmdCommand {}
