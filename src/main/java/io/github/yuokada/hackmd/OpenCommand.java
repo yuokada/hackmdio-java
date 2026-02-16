@@ -11,9 +11,9 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
 /**
- * A command to open a note's permanent link in the default browser.
+ * A command to open a note's publish link in the default browser.
  */
-@Command(name = "open", description = "Open a note's permanent link in the browser")
+@Command(name = "open", description = "Open a note's publish link in the browser")
 public class OpenCommand implements Runnable {
 
   @Inject HackMdService hackMdService;
@@ -25,14 +25,14 @@ public class OpenCommand implements Runnable {
   public void run() {
     try {
       NoteDetailResponse note = hackMdService.getNote(noteId);
-      String permalink = note.permalink();
+      String publishLink = note.publishLink();
 
-      if (permalink == null || permalink.isEmpty()) {
-        System.err.println("Error: Note does not have a permalink.");
+      if (publishLink == null || publishLink.isEmpty()) {
+        System.err.println("Error: Note does not have a publish link.");
         return;
       }
 
-      openInBrowser(permalink);
+      openInBrowser(publishLink);
     } catch (Exception e) {
       System.err.println("Error opening note: " + e.getMessage());
     }

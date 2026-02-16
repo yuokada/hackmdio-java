@@ -51,8 +51,8 @@ class OpenCommandTest {
             Instant.now(),
             "view",
             null,
-            "https://hackmd.io/@user/test-note",
             null,
+            "https://hackmd.io/@user/test-note",
             "abc123",
             "Test content",
             Instant.now(),
@@ -71,7 +71,7 @@ class OpenCommandTest {
     // Either opened successfully or shows manual URL (depending on Desktop support)
     assertTrue(
         output.contains("https://hackmd.io/@user/test-note") || output.contains("Opened:"),
-        "Output should contain the permalink URL");
+        "Output should contain the publish link URL");
   }
 
   @Test
@@ -103,7 +103,7 @@ class OpenCommandTest {
     command.run();
 
     String error = errorCapture.toString();
-    assertTrue(error.contains("Note does not have a permalink"));
+    assertTrue(error.contains("Note does not have a publish link"));
   }
 
   @Test
@@ -118,8 +118,8 @@ class OpenCommandTest {
             Instant.now(),
             "view",
             null,
-            "",
             null,
+            "",
             "abc123",
             "Test content",
             Instant.now(),
@@ -135,7 +135,7 @@ class OpenCommandTest {
     command.run();
 
     String error = errorCapture.toString();
-    assertTrue(error.contains("Note does not have a permalink"));
+    assertTrue(error.contains("Note does not have a publish link"));
   }
 
   @Test
