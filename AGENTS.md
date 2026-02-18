@@ -34,9 +34,10 @@ A Quarkus + Picocli CLI application for interacting with the HackMD API. It supp
 **Root package**: `io.github.yuokada.hackmd`
 
 - **Commands** (Picocli): `HackmdCommand` (root, `@TopCommand`) aggregates subcommands — `ListCommand`, `CreateCommand`, `GetCommand`, `OpenCommand`, `IndexCommand`, `SearchCommand`
-- **API layer**: `HackMdApi` (MicroProfile REST Client interface, base URL in `application.properties`) → `HackMdService` (business logic, `@ApplicationScoped`) → `AuthorizationFilter` (`ClientRequestFilter`, injects Bearer token from `hackmd.api.token` config property)
+- **API layer**: `HackMdApi` (MicroProfile REST Client interface; list/create/get note endpoints, base URL in `application.properties`) → `HackMdService` (business logic, `@ApplicationScoped`). `client/HackmdRestClient` mirrors the Swagger endpoints (teams/history/update/delete, etc.) and is currently not wired to commands. `AuthorizationFilter` (`ClientRequestFilter`, injects Bearer token from `hackmd.api.token` config property)
 - **Local storage**: `CouchbaseLiteService` (`@Startup`, `@ApplicationScoped`) manages Couchbase Lite for offline indexing and FTS search. Document operations use `Collection` (v4 API).
-- **Models**: Java records in `model/` package — `Note`, `NoteDetailResponse`, `IndexedNote`, `CreateNoteRequest`, `UpdateNoteRequest`, etc.
+- **Models**: Java records (plus helpers) in `model/` package — `Note`, `NoteDetailResponse`, `IndexedNote`, `CreateNoteRequest`, `UpdateNoteRequest`, `Team`, `TeamVisibility`, `UserProfile`, `EpochMillisInstantDeserializer`
+- **Utilities**: `SnippetUtil` generates search snippets for `SearchCommand`
 
 ## Coding Style
 
