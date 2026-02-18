@@ -12,6 +12,7 @@ import com.couchbase.lite.FullTextFunction;
 import com.couchbase.lite.FullTextIndex;
 import com.couchbase.lite.FullTextIndexItem;
 import com.couchbase.lite.IndexBuilder;
+import com.couchbase.lite.LogLevel;
 import com.couchbase.lite.Meta;
 import com.couchbase.lite.MutableArray;
 import com.couchbase.lite.MutableDocument;
@@ -20,6 +21,8 @@ import com.couchbase.lite.QueryBuilder;
 import com.couchbase.lite.Result;
 import com.couchbase.lite.ResultSet;
 import com.couchbase.lite.SelectResult;
+import com.couchbase.lite.logging.ConsoleLogSink;
+import com.couchbase.lite.logging.LogSinks;
 import io.github.yuokada.hackmd.model.NoteDetailResponse;
 import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -58,6 +61,8 @@ public class CouchbaseLiteService {
   public void init() {
     try {
       CouchbaseLite.init();
+      // Disable Couchbase Lite logging
+      LogSinks.get().setConsole(new ConsoleLogSink(LogLevel.NONE));
       Path dbDir = Path.of(databasePath);
       Files.createDirectories(dbDir);
       if (dbDir.getFileSystem().supportedFileAttributeViews().contains("posix")) {
