@@ -21,6 +21,8 @@ import com.couchbase.lite.QueryBuilder;
 import com.couchbase.lite.Result;
 import com.couchbase.lite.ResultSet;
 import com.couchbase.lite.SelectResult;
+import com.couchbase.lite.logging.ConsoleLogSink;
+import com.couchbase.lite.logging.LogSinks;
 import io.github.yuokada.hackmd.model.NoteDetailResponse;
 import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -60,7 +62,7 @@ public class CouchbaseLiteService {
     try {
       CouchbaseLite.init();
       // Disable Couchbase Lite logging
-      Database.log.getConsole().setLevel(LogLevel.NONE);
+      LogSinks.get().setConsole(new ConsoleLogSink(LogLevel.NONE));
       Path dbDir = Path.of(databasePath);
       Files.createDirectories(dbDir);
       if (dbDir.getFileSystem().supportedFileAttributeViews().contains("posix")) {
