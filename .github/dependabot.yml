@@ -15,4 +15,4 @@ updates:
       day: saturday
     cooldown:
       default-days: 5
-      semver-major-days: 30
+      # semver-major-days: 30
