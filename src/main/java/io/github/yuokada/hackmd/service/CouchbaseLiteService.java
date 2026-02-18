@@ -1,6 +1,7 @@
 package io.github.yuokada.hackmd.service;
 
 import com.couchbase.lite.Array;
+import com.couchbase.lite.Collection;
 import com.couchbase.lite.CouchbaseLite;
 import com.couchbase.lite.DataSource;
 import com.couchbase.lite.Database;
@@ -46,6 +47,7 @@ public class CouchbaseLiteService {
   private static final String ID_PREFIX = "note::";
 
   private Database database;
+  private Collection collection;
 
   @ConfigProperty(name = "couchbase.lite.database.path", defaultValue = ".")
   String databasePath;
@@ -64,6 +66,7 @@ public class CouchbaseLiteService {
       DatabaseConfiguration config = new DatabaseConfiguration();
       config.setDirectory(databasePath);
       database = new Database(DATABASE_NAME, config);
+      collection = database.getDefaultCollection();
     } catch (Exception e) {
       throw new RuntimeException("Failed to initialize Couchbase Lite database", e);
     }
@@ -81,7 +84,7 @@ public class CouchbaseLiteService {
       FullTextIndex ftsIndex =
           IndexBuilder.fullTextIndex(
               FullTextIndexItem.property("content"), FullTextIndexItem.property("title"));
-      database.createIndex(FTS_INDEX_NAME, ftsIndex);
+      collection.createIndex(FTS_INDEX_NAME, ftsIndex);
     } catch (Exception e) {
       // Index might already exist, which is fine
       logger.error("FTS Index creation note: " + e.getMessage());
@@ -123,7 +126,7 @@ public class CouchbaseLiteService {
       // Set downloadedAt to current time
       doc.setString("downloadedAt", Instant.now().toString());
 
-      database.save(doc);
+      collection.save(doc);
     } catch (Exception e) {
       throw new RuntimeException("Failed to save note: " + note.id(), e);
     }
@@ -140,7 +143,7 @@ public class CouchbaseLiteService {
       if (database == null) {
         init();
       }
-      Document doc = database.getDocument(toDocId(noteId));
+      Document doc = collection.getDocument(toDocId(noteId));
       if (doc == null) {
         return null;
       }
@@ -162,7 +165,7 @@ public class CouchbaseLiteService {
       if (database == null) {
         init();
       }
-      Document doc = database.getDocument(toDocId(noteId));
+      Document doc = collection.getDocument(toDocId(noteId));
       if (doc == null) {
         return true; // Note doesn't exist, needs to be fetched
       }
@@ -205,7 +208,7 @@ public class CouchbaseLiteService {
                   SelectResult.property("content"),
                   SelectResult.property("tags"),
                   SelectResult.property("updatedAt"))
-              .from(DataSource.database(database))
+              .from(DataSource.collection(collection))
               .where(
                   FullTextFunction.match(
                       Expression.fullTextIndex(FTS_INDEX_NAME), searchTerm));
