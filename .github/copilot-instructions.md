@@ -12,7 +12,7 @@ Follow these repository instructions when working in this project.
 
 ## Project context
 
-- Main code lives under `src/main/java/io/github/yuokada/quarkus/`.
+- Main code lives under `src/main/java/io/github/yuokada/quarkus/` and `src/main/java/io/github/yuokada/hackmd/quarkus/`.
 - API and persistence models live under `src/main/java/io/github/yuokada/quarkus/model/`.
 - Runtime configuration is defined in `src/main/resources/application.properties`.
 - Build and style rules are managed via Maven Wrapper and `pom.xml`.
