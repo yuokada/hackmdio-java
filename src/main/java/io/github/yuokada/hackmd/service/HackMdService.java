@@ -1,15 +1,14 @@
 package io.github.yuokada.hackmd.service;
 
-import io.github.yuokada.hackmd.HackMdApi;
 import io.github.yuokada.hackmd.model.CreateNoteRequest;
 import io.github.yuokada.hackmd.model.Note;
 import io.github.yuokada.hackmd.model.NoteDetailResponse;
+import io.github.yuokada.hackmd.transport.HackmdTransport;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 /**
  * A service to interact with the HackMD API and persist note metadata.
@@ -17,7 +16,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 @ApplicationScoped
 public class HackMdService {
 
-  @Inject @RestClient HackMdApi hackMdApi;
+  @Inject HackmdTransport hackmdTransport;
 
   /**
    * Lists all notes from the API and synchronizes them with the local database.
@@ -26,13 +25,13 @@ public class HackMdService {
    */
   @Transactional
   public Set<Note> listNotes() {
-    Set<NoteDetailResponse> notes = hackMdApi.getNotes();
+    Set<NoteDetailResponse> notes = hackmdTransport.getNotes();
     return notes.stream().map(NoteDetailResponse::toNote).collect(Collectors.toSet());
   }
 
   public Set<NoteDetailResponse> listNoteDetails() {
     // TODO: Implement pagination if needed
-    return hackMdApi.getNotes();
+    return hackmdTransport.getNotes();
   }
 
   /**
@@ -45,7 +44,7 @@ public class HackMdService {
   @Transactional
   public Note createNote(String title, String content) {
     var request = new CreateNoteRequest(title, content, "owner", "owner");
-    Note newNote = hackMdApi.createNote(request);
+    Note newNote = hackmdTransport.createNote(request);
     return newNote;
   }
 
@@ -57,7 +56,7 @@ public class HackMdService {
    */
   @Transactional
   public NoteDetailResponse getNote(String noteId) {
-    NoteDetailResponse note = hackMdApi.getNote(noteId);
+    NoteDetailResponse note = hackmdTransport.getNote(noteId);
     return note;
   }
 }
