@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import io.github.yuokada.hackmd.auth.HackmdCredentialsProvider;
+import io.github.yuokada.hackmd.auth.HackmdRequestContext;
+import java.net.URI;
 import jakarta.ws.rs.client.ClientRequestContext;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
@@ -21,19 +24,27 @@ class AuthorizationFilterTest {
   private AuthorizationFilter filter;
   private ClientRequestContext requestContext;
   private MultivaluedMap<String, Object> headers;
+  private HackmdCredentialsProvider credentialsProvider;
+  private HackmdRequestContext hackmdRequestContext;
 
   @BeforeEach
   void setUp() {
     filter = new AuthorizationFilter();
     requestContext = mock(ClientRequestContext.class);
+    credentialsProvider = mock(HackmdCredentialsProvider.class);
     headers = new MultivaluedHashMap<>();
+    URI uri = URI.create("https://api.hackmd.io/v1/notes");
+    when(requestContext.getMethod()).thenReturn("GET");
+    when(requestContext.getUri()).thenReturn(uri);
     when(requestContext.getHeaders()).thenReturn(headers);
+    filter.credentialsProvider = credentialsProvider;
+    hackmdRequestContext = new HackmdRequestContext("GET", uri);
   }
 
   @Test
   void testFilterAddsAuthorizationHeaderWithValidToken() {
     // Given
-    filter.apiToken = "test-api-token-12345";
+    when(credentialsProvider.token(hackmdRequestContext)).thenReturn("test-api-token-12345");
 
     // When
     filter.filter(requestContext);
@@ -46,7 +57,7 @@ class AuthorizationFilterTest {
   @Test
   @DisplayName("Test filter does not add header when token is null")
   void testFilterDoesNotAddHeaderWhenTokenIsNull() {
-    filter.apiToken = null;
+    when(credentialsProvider.token(hackmdRequestContext)).thenReturn(null);
     filter.filter(requestContext);
     assertFalse(headers.containsKey("Authorization"));
   }
@@ -55,7 +66,7 @@ class AuthorizationFilterTest {
   @DisplayName("Test filter does not add header when token is empty")
   void testFilterDoesNotAddHeaderWhenTokenIsEmpty() {
     // Given
-    filter.apiToken = "";
+    when(credentialsProvider.token(hackmdRequestContext)).thenReturn("");
 
     // When
     filter.filter(requestContext);
@@ -67,14 +78,14 @@ class AuthorizationFilterTest {
   @Test
   @DisplayName("Test filter does not add header when token is blank")
   void testFilterDoesNotAddHeaderWhenTokenIsBlank() {
-    filter.apiToken = "   ";
+    when(credentialsProvider.token(hackmdRequestContext)).thenReturn("   ");
     filter.filter(requestContext);
     assertFalse(headers.containsKey("Authorization"));
   }
 
   @Test
   void testFilterAddsHeaderWithCorrectBearerPrefix() {
-    filter.apiToken = "my-token";
+    when(credentialsProvider.token(hackmdRequestContext)).thenReturn("my-token");
     filter.filter(requestContext);
     assertEquals("Bearer my-token", headers.getFirst("Authorization"));
   }
@@ -82,7 +93,7 @@ class AuthorizationFilterTest {
   @Test
   @DisplayName("Test filter handles token with leading and trailing spaces")
   void testFilterHandlesTokenWithSpaces() {
-    filter.apiToken = "token with spaces";
+    when(credentialsProvider.token(hackmdRequestContext)).thenReturn("token with spaces");
     filter.filter(requestContext);
     assertEquals("Bearer token with spaces", headers.getFirst("Authorization"));
   }
@@ -91,7 +102,8 @@ class AuthorizationFilterTest {
   @DisplayName("Test filter handles special characters in token")
   void testFilterHandlesSpecialCharactersInToken() {
     // Given
-    filter.apiToken = "token!@#$%^&*()_+-=[]{}|;':,.<>?";
+    when(credentialsProvider.token(hackmdRequestContext))
+        .thenReturn("token!@#$%^&*()_+-=[]{}|;':,.<>?");
 
     // When
     filter.filter(requestContext);
