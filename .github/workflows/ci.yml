@@ -13,8 +13,15 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    container:
+      image: debian:13-slim
 
     steps:
+      - name: Install runner dependencies
+        run: |
+          apt-get update
+          apt-get install --yes ca-certificates curl git libicu76
+
       - name: Checkout repository
         uses: actions/checkout@v7
 
