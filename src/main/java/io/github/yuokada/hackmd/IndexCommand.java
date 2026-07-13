@@ -5,15 +5,19 @@ import io.github.yuokada.hackmd.model.NoteDetailResponse;
 import io.github.yuokada.hackmd.service.CouchbaseLiteService;
 import io.github.yuokada.hackmd.service.HackMdService;
 import jakarta.inject.Inject;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.ClientWebApplicationException;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.ExitCode;
 
 /**
  * A command to index notes from HackMD to local Couchbase Lite database.
  */
 @Command(name = "index", description = "Index notes from HackMD to local database")
-public class IndexCommand implements Runnable {
+public class IndexCommand implements Callable<Integer> {
 
   private static final int API_CALL_DELAY_MS = 500;
   private static final int MAX_RETRIES = 3;
@@ -24,8 +28,10 @@ public class IndexCommand implements Runnable {
   @Inject CouchbaseLiteService couchbaseLiteService;
   @Inject Logger logger;
 
+  Sleeper sleeper = Thread::sleep;
+
   @Override
-  public void run() {
+  public Integer call() {
     System.out.println("Starting indexing process...");
 
     // Create FTS index
@@ -36,7 +42,9 @@ public class IndexCommand implements Runnable {
 
     if (notes.isEmpty()) {
       System.out.println("No notes found.");
-      return;
+      int deletedNotes = couchbaseLiteService.removeMissingNotes(Set.of());
+      System.out.printf("Deleted notes: %d%n", deletedNotes);
+      return ExitCode.OK;
     }
 
     int totalNotes = notes.size();
@@ -59,7 +67,7 @@ public class IndexCommand implements Runnable {
         if (needsUpdate) {
           // Fetch full note content from API with retry on 429
           NoteDetailResponse fullNote = fetchNoteWithRetry(note.originalId());
-          Thread.sleep(API_CALL_DELAY_MS);
+          sleeper.sleep(API_CALL_DELAY_MS);
 
           // Determine if it's new or updated
           if (couchbaseLiteService.getNote(note.id()) == null) {
@@ -86,14 +94,24 @@ public class IndexCommand implements Runnable {
       }
     }
 
+    Set<String> remoteNoteIds =
+        notes.stream().map(NoteDetailResponse::id).collect(Collectors.toSet());
+    int deletedNotes = couchbaseLiteService.removeMissingNotes(remoteNoteIds);
+
     // Display summary
     System.out.println("\n=== Indexing Summary ===");
     System.out.printf("Total notes: %d%n", totalNotes);
     System.out.printf("New notes: %d%n", newNotes);
     System.out.printf("Updated notes: %d%n", updatedNotes);
     System.out.printf("Skipped notes: %d%n", skippedNotes);
+    System.out.printf("Deleted notes: %d%n", deletedNotes);
     System.out.printf("Error notes: %d%n", errorNotes);
+    if (errorNotes > 0) {
+      System.err.println("Indexing completed with errors.");
+      return ExitCode.SOFTWARE;
+    }
     System.out.println("Indexing completed successfully.");
+    return ExitCode.OK;
   }
 
   private NoteDetailResponse fetchNoteWithRetry(String noteId) {
@@ -105,11 +123,11 @@ public class IndexCommand implements Runnable {
         if (e.getResponse().getStatus() == 429 && retries < MAX_RETRIES) {
           retries++;
           long backoff = INITIAL_BACKOFF_MS * (1L << (retries - 1));
-          logger.error(
+          logger.warn(
               "Rate limited when fetching note %s. Retry %d/%d after %dms."
                   .formatted(noteId, retries, MAX_RETRIES, backoff));
           try {
-            Thread.sleep(backoff);
+            sleeper.sleep(backoff);
           } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
             throw e;
@@ -119,5 +137,10 @@ public class IndexCommand implements Runnable {
         }
       }
     }
+  }
+
+  @FunctionalInterface
+  interface Sleeper {
+    void sleep(long milliseconds) throws InterruptedException;
   }
 }

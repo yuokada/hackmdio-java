@@ -1,6 +1,7 @@
 package io.github.yuokada.hackmd;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -45,7 +46,7 @@ class SearchCommandTest {
   void runWithEmptyResults() {
     when(command.couchbaseLiteService.searchNotes("test")).thenReturn(List.of());
 
-    command.run();
+    assertEquals(0, command.call());
 
     String output = outputCapture.toString();
     assertTrue(output.contains("No results found."));
@@ -62,7 +63,7 @@ class SearchCommandTest {
 
     when(command.couchbaseLiteService.searchNotes("test")).thenReturn(List.of(result));
 
-    command.run();
+    assertEquals(0, command.call());
 
     String output = outputCapture.toString();
     assertTrue(output.contains("Found 1 result(s):"));
@@ -78,7 +79,7 @@ class SearchCommandTest {
   }
 
   @Test
-  void runWithJsonOutput() {
+  void runWithJsonOutput() throws Exception {
     command.jsonOutput = true;
 
     Map<String, Object> result = new HashMap<>();
@@ -88,11 +89,13 @@ class SearchCommandTest {
 
     when(command.couchbaseLiteService.searchNotes("test")).thenReturn(List.of(result));
 
-    command.run();
+    assertEquals(0, command.call());
 
     String output = outputCapture.toString();
-    assertTrue(output.contains("\"shortId\" : \"abc123\""));
-    assertTrue(output.contains("\"title\" : \"Test Note\""));
+    List<?> parsed = new ObjectMapper().readValue(output, List.class);
+    assertEquals(1, parsed.size());
+    assertEquals("abc123", ((Map<?, ?>) parsed.get(0)).get("shortId"));
+    assertFalse(output.contains("Searching for:"));
   }
 
   @Test
@@ -105,7 +108,7 @@ class SearchCommandTest {
 
     when(command.couchbaseLiteService.searchNotes("test")).thenReturn(List.of(result));
 
-    command.run();
+    assertEquals(0, command.call());
 
     String output = outputCapture.toString();
     assertTrue(output.contains("N/A"));
@@ -188,12 +191,22 @@ class SearchCommandTest {
     when(command.couchbaseLiteService.searchNotes("test"))
         .thenReturn(List.of(result1, result2));
 
-    command.run();
+    assertEquals(0, command.call());
 
     String output = outputCapture.toString();
     assertTrue(output.contains("Found 2 result(s):"));
     assertTrue(output.contains("id1"));
     assertTrue(output.contains("id2"));
+  }
+
+  @Test
+  void runWithJsonOutputAndEmptyResults() throws Exception {
+    command.jsonOutput = true;
+    when(command.couchbaseLiteService.searchNotes("test")).thenReturn(List.of());
+
+    assertEquals(0, command.call());
+
+    assertEquals(List.of(), new ObjectMapper().readValue(outputCapture.toString(), List.class));
   }
 
   @SuppressWarnings("unchecked")
