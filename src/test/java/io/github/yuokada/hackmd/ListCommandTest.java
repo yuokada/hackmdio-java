@@ -19,13 +19,13 @@ class ListCommandTest {
 
   private final PrintStream originalOut = System.out;
   private ByteArrayOutputStream output;
-  private ListCommand command;
+  private HackmdCommand command;
 
   @BeforeEach
   void setUp() {
     output = new ByteArrayOutputStream();
     System.setOut(new PrintStream(output));
-    command = new ListCommand();
+    command = new HackmdCommand();
     command.hackMdService = mock(HackMdService.class);
     command.objectMapper = new ObjectMapper().findAndRegisterModules();
   }
@@ -37,24 +37,22 @@ class ListCommandTest {
 
   @Test
   void jsonOutputIsValidForEmptyResults() throws Exception {
-    command.jsonOutput = true;
     when(command.hackMdService.listNotes()).thenReturn(List.of());
 
-    assertEquals(0, command.call());
+    assertEquals(0, command.list(true));
 
     assertEquals(List.of(), new ObjectMapper().readValue(output.toString(), List.class));
   }
 
   @Test
   void jsonOutputIsValidForNotes() throws Exception {
-    command.jsonOutput = true;
     when(command.hackMdService.listNotes())
         .thenReturn(
             List.of(
                 TestFixtures.note("note-1", "First", "body", Instant.parse("2024-01-02T00:00:00Z"))
                     .toNote()));
 
-    assertEquals(0, command.call());
+    assertEquals(0, command.list(true));
 
     List<?> notes = new ObjectMapper().readValue(output.toString(), List.class);
     assertEquals(1, notes.size());
@@ -64,7 +62,7 @@ class ListCommandTest {
   void humanOutputExplainsEmptyResults() {
     when(command.hackMdService.listNotes()).thenReturn(List.of());
 
-    assertEquals(0, command.call());
+    assertEquals(0, command.list(false));
 
     assertTrue(output.toString().contains("No notes found."));
   }

@@ -31,13 +31,12 @@ class GetCommandTest {
 
   @Test
   void printsNoteContent() {
-    GetCommand command = new GetCommand();
+    HackmdCommand command = new HackmdCommand();
     command.hackMdService = mock(HackMdService.class);
-    command.noteId = "abc";
     when(command.hackMdService.getNote("abc"))
         .thenReturn(TestFixtures.note("abc", "Title", "Body", Instant.now()));
 
-    assertEquals(0, command.call());
+    assertEquals(0, command.get("abc"));
 
     assertTrue(output.toString().contains("Title: Title"));
     assertTrue(output.toString().contains("Body"));
