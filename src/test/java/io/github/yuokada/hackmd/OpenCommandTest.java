@@ -25,7 +25,7 @@ class OpenCommandTest {
   private final PrintStream originalErr = System.err;
   private ByteArrayOutputStream outputCapture;
   private ByteArrayOutputStream errorCapture;
-  private HackmdCommand.OpenCommand command;
+  private HackmdCommand command;
 
   @BeforeEach
   void setUp() {
@@ -34,7 +34,7 @@ class OpenCommandTest {
     System.setOut(new PrintStream(outputCapture));
     System.setErr(new PrintStream(errorCapture));
 
-    command = spy(new HackmdCommand.OpenCommand());
+    command = spy(new HackmdCommand());
     command.hackMdService = mock(HackMdService.class);
   }
 
@@ -67,11 +67,10 @@ class OpenCommandTest {
             "owner",
             "signed_in");
 
-    command.noteId = "test-id";
     when(command.hackMdService.getNote("test-id")).thenReturn(note);
     doReturn(true).when(command).openInBrowser(anyString());
 
-    assertEquals(0, command.call());
+    assertEquals(0, command.open("test-id"));
 
     verify(command).openInBrowser("https://hackmd.io/@user/test-note");
   }
@@ -99,10 +98,9 @@ class OpenCommandTest {
             "owner",
             "signed_in");
 
-    command.noteId = "test-id";
     when(command.hackMdService.getNote("test-id")).thenReturn(note);
 
-    assertEquals(1, command.call());
+    assertEquals(1, command.open("test-id"));
 
     String error = errorCapture.toString();
     assertTrue(error.contains("Note does not have a publish link"));
@@ -131,10 +129,9 @@ class OpenCommandTest {
             "owner",
             "signed_in");
 
-    command.noteId = "test-id";
     when(command.hackMdService.getNote("test-id")).thenReturn(note);
 
-    assertEquals(1, command.call());
+    assertEquals(1, command.open("test-id"));
 
     String error = errorCapture.toString();
     assertTrue(error.contains("Note does not have a publish link"));
@@ -142,11 +139,10 @@ class OpenCommandTest {
 
   @Test
   void runWithServiceException() {
-    command.noteId = "invalid-id";
     when(command.hackMdService.getNote("invalid-id"))
         .thenThrow(new RuntimeException("Note not found"));
 
-    assertEquals(1, command.call());
+    assertEquals(1, command.open("invalid-id"));
 
     String error = errorCapture.toString();
     assertTrue(error.contains("Error opening note"));

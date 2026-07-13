@@ -17,16 +17,14 @@ class CreateCommandTest {
 
   private final PrintStream originalOut = System.out;
   private ByteArrayOutputStream output;
-  private HackmdCommand.CreateCommand command;
+  private HackmdCommand command;
 
   @BeforeEach
   void setUp() {
     output = new ByteArrayOutputStream();
     System.setOut(new PrintStream(output));
-    command = new HackmdCommand.CreateCommand();
+    command = new HackmdCommand();
     command.hackMdService = mock(HackMdService.class);
-    command.title = "Title";
-    command.content = "Body";
   }
 
   @AfterEach
@@ -39,7 +37,7 @@ class CreateCommandTest {
     when(command.hackMdService.createNote("Title", "Body"))
         .thenReturn(TestFixtures.note("abc", "Title", "Body", Instant.now()).toNote());
 
-    assertEquals(0, command.call());
+    assertEquals(0, command.create("Title", "Body"));
 
     assertTrue(output.toString().contains("ID: abc"));
   }
