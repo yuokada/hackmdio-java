@@ -1,10 +1,11 @@
 package io.github.yuokada.hackmd;
 
+import io.github.yuokada.hackmd.auth.HackmdCredentialsProvider;
+import io.github.yuokada.hackmd.auth.HackmdRequestContext;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.client.ClientRequestContext;
 import jakarta.ws.rs.client.ClientRequestFilter;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 /**
@@ -17,12 +18,13 @@ public class AuthorizationFilter implements ClientRequestFilter {
 
   private static final String BEARER_PREFIX = "Bearer ";
 
-  @Inject
-  @ConfigProperty(name = "hackmd.api.token", defaultValue = "")
-  String apiToken;
+  @Inject HackmdCredentialsProvider credentialsProvider;
 
   @Override
   public void filter(ClientRequestContext requestContext) {
+    HackmdRequestContext context =
+        new HackmdRequestContext(requestContext.getMethod(), requestContext.getUri());
+    String apiToken = credentialsProvider.token(context);
     if (apiToken != null && !apiToken.isBlank()) {
       String authorization = BEARER_PREFIX + apiToken;
       requestContext.getHeaders().add("Authorization", authorization);
