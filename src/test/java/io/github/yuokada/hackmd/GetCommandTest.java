@@ -31,7 +31,7 @@ class GetCommandTest {
 
   @Test
   void printsNoteContent() {
-    GetCommand command = new GetCommand();
+    HackmdCommand.GetCommand command = new HackmdCommand.GetCommand();
     command.hackMdService = mock(HackMdService.class);
     command.noteId = "abc";
     when(command.hackMdService.getNote("abc"))

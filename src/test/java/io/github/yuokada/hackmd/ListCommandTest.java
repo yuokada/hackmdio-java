@@ -19,13 +19,13 @@ class ListCommandTest {
 
   private final PrintStream originalOut = System.out;
   private ByteArrayOutputStream output;
-  private ListCommand command;
+  private HackmdCommand.ListCommand command;
 
   @BeforeEach
   void setUp() {
     output = new ByteArrayOutputStream();
     System.setOut(new PrintStream(output));
-    command = new ListCommand();
+    command = new HackmdCommand.ListCommand();
     command.hackMdService = mock(HackMdService.class);
     command.objectMapper = new ObjectMapper().findAndRegisterModules();
   }

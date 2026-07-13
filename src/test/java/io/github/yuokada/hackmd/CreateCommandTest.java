@@ -17,13 +17,13 @@ class CreateCommandTest {
 
   private final PrintStream originalOut = System.out;
   private ByteArrayOutputStream output;
-  private CreateCommand command;
+  private HackmdCommand.CreateCommand command;
 
   @BeforeEach
   void setUp() {
     output = new ByteArrayOutputStream();
     System.setOut(new PrintStream(output));
-    command = new CreateCommand();
+    command = new HackmdCommand.CreateCommand();
     command.hackMdService = mock(HackMdService.class);
     command.title = "Title";
     command.content = "Body";

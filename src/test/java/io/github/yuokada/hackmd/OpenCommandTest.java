@@ -25,7 +25,7 @@ class OpenCommandTest {
   private final PrintStream originalErr = System.err;
   private ByteArrayOutputStream outputCapture;
   private ByteArrayOutputStream errorCapture;
-  private OpenCommand command;
+  private HackmdCommand.OpenCommand command;
 
   @BeforeEach
   void setUp() {
@@ -34,7 +34,7 @@ class OpenCommandTest {
     System.setOut(new PrintStream(outputCapture));
     System.setErr(new PrintStream(errorCapture));
 
-    command = spy(new OpenCommand());
+    command = spy(new HackmdCommand.OpenCommand());
     command.hackMdService = mock(HackMdService.class);
   }
 
