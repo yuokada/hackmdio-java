@@ -47,7 +47,7 @@
         <dependency>
           <groupId>com.couchbase.lite</groupId>
           <artifactId>couchbase-lite-java</artifactId>
-          <version>4.0.4</version>
+          <version>4.1.0</version>
         </dependency>
 
         <dependency>
