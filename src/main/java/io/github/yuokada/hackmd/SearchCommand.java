@@ -9,6 +9,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import org.jboss.logging.Logger;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -18,7 +19,7 @@ import picocli.CommandLine.Parameters;
  * A command to search notes in the local Couchbase Lite database.
  */
 @Command(name = "search", description = "Search notes in local database")
-public class SearchCommand implements Runnable {
+public class SearchCommand implements Callable<Integer> {
 
   @Inject CouchbaseLiteService couchbaseLiteService;
 
@@ -38,27 +39,28 @@ public class SearchCommand implements Runnable {
   @Inject Logger logger;
 
   @Override
-  public void run() {
-    System.out.printf("Searching for: \"%s\"%n%n", searchTerm);
-
+  public Integer call() {
     List<Map<String, Object>> results = couchbaseLiteService.searchNotes(searchTerm);
-
-    if (results.isEmpty()) {
-      System.out.println("No results found.");
-      return;
-    }
-
-    System.out.printf("Found %d result(s):%n%n", results.size());
 
     if (jsonOutput) {
       try {
         System.out.println(
             objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(results));
+        return 0;
       } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
         logger.error("Error serializing results to JSON", e);
+        return 1;
       }
-      return;
     }
+
+    System.out.printf("Searching for: \"%s\"%n%n", searchTerm);
+
+    if (results.isEmpty()) {
+      System.out.println("No results found.");
+      return 0;
+    }
+
+    System.out.printf("Found %d result(s):%n%n", results.size());
 
     // Calculate column widths
     int maxIdLength = "ID".length();
@@ -129,6 +131,7 @@ public class SearchCommand implements Runnable {
     }
 
     System.out.println();
+    return 0;
   }
 
   @SuppressWarnings("unchecked")

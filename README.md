@@ -65,11 +65,18 @@ java -jar $JAR search "search term"
 java -jar $JAR search --json "search term"
 ```
 
+When `--json` is specified, stdout contains only a JSON array. Empty list and search results are
+reported as `[]`, so the output can be passed directly to tools such as `jq`.
+
+Commands return exit code `0` on success and a non-zero exit code when an API, local database,
+serialization, indexing, or browser operation fails. Diagnostic messages are written to stderr.
+
 ### Index and Search Features
 
 The `index` command synchronizes your HackMD notes to a local Couchbase Lite database, enabling offline search:
 
 - **Smart Sync**: Only downloads new or updated notes based on timestamps
+- **Deletion Sync**: Removes locally indexed notes that no longer exist in HackMD
 - **Rate-Limit Handling**: Automatic retry with exponential backoff on 429 responses
 - **Progress Tracking**: Shows real-time progress during indexing
 - **Summary Report**: Displays statistics about new, updated, and skipped notes
@@ -88,8 +95,8 @@ The `search` command performs full-text search on locally indexed notes:
 ./mvnw quarkus:dev
 ./mvnw quarkus:dev -Dquarkus.args='list --json'
 
-# Run tests
-./mvnw test
+# Run the complete verification lifecycle (tests, Checkstyle, and coverage check)
+./mvnw verify
 
 # Checkstyle (Google Java Style)
 ./mvnw checkstyle:check
@@ -97,6 +104,6 @@ The `search` command performs full-text search on locally indexed notes:
 
 ## CI
 
-Every push and pull request targeting `master` triggers the GitHub Actions workflow defined in `.github/workflows/ci.yml`, which sets up Temurin JDK 17 and runs `./mvnw -B test` to ensure the CLI continues to build and pass tests.
+Every push and pull request targeting `master` triggers the GitHub Actions workflow defined in `.github/workflows/ci.yml`, which sets up Temurin JDK 17 and runs `./mvnw -B verify`. The build enforces Checkstyle and a minimum 70% line-coverage baseline in addition to running the test suite.
 
 Dependency updates are monitored by Dependabot (`.github/dependabot.yml`), which opens weekly pull requests for Maven dependencies and GitHub Actions.

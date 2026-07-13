@@ -1,14 +1,12 @@
 package io.github.yuokada.hackmd.service;
 
-import io.github.yuokada.hackmd.HackMdApi;
+import io.github.yuokada.hackmd.client.HackmdRestClient;
 import io.github.yuokada.hackmd.model.CreateNoteRequest;
 import io.github.yuokada.hackmd.model.Note;
 import io.github.yuokada.hackmd.model.NoteDetailResponse;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.List;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 /**
@@ -17,22 +15,19 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 @ApplicationScoped
 public class HackMdService {
 
-  @Inject @RestClient HackMdApi hackMdApi;
+  @Inject @RestClient HackmdRestClient hackmdRestClient;
 
   /**
    * Lists all notes from the API and synchronizes them with the local database.
    *
    * @return A set of notes.
    */
-  @Transactional
-  public Set<Note> listNotes() {
-    Set<NoteDetailResponse> notes = hackMdApi.getNotes();
-    return notes.stream().map(NoteDetailResponse::toNote).collect(Collectors.toSet());
+  public List<Note> listNotes() {
+    return hackmdRestClient.listNotes().stream().map(NoteDetailResponse::toNote).toList();
   }
 
-  public Set<NoteDetailResponse> listNoteDetails() {
-    // TODO: Implement pagination if needed
-    return hackMdApi.getNotes();
+  public List<NoteDetailResponse> listNoteDetails() {
+    return hackmdRestClient.listNotes();
   }
 
   /**
@@ -42,11 +37,9 @@ public class HackMdService {
    * @param content The content of the note.
    * @return The created note.
    */
-  @Transactional
   public Note createNote(String title, String content) {
     var request = new CreateNoteRequest(title, content, "owner", "owner");
-    Note newNote = hackMdApi.createNote(request);
-    return newNote;
+    return hackmdRestClient.createNote(request).toNote();
   }
 
   /**
@@ -55,9 +48,7 @@ public class HackMdService {
    * @param noteId The ID of the note to get.
    * @return The note.
    */
-  @Transactional
   public NoteDetailResponse getNote(String noteId) {
-    NoteDetailResponse note = hackMdApi.getNote(noteId);
-    return note;
+    return hackmdRestClient.getNote(noteId);
   }
 }

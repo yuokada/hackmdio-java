@@ -2,7 +2,8 @@ package io.github.yuokada.hackmd;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -68,9 +69,9 @@ class OpenCommandTest {
 
     command.noteId = "test-id";
     when(command.hackMdService.getNote("test-id")).thenReturn(note);
-    doNothing().when(command).openInBrowser(anyString());
+    doReturn(true).when(command).openInBrowser(anyString());
 
-    command.run();
+    assertEquals(0, command.call());
 
     verify(command).openInBrowser("https://hackmd.io/@user/test-note");
   }
@@ -101,7 +102,7 @@ class OpenCommandTest {
     command.noteId = "test-id";
     when(command.hackMdService.getNote("test-id")).thenReturn(note);
 
-    command.run();
+    assertEquals(1, command.call());
 
     String error = errorCapture.toString();
     assertTrue(error.contains("Note does not have a publish link"));
@@ -133,7 +134,7 @@ class OpenCommandTest {
     command.noteId = "test-id";
     when(command.hackMdService.getNote("test-id")).thenReturn(note);
 
-    command.run();
+    assertEquals(1, command.call());
 
     String error = errorCapture.toString();
     assertTrue(error.contains("Note does not have a publish link"));
@@ -145,7 +146,7 @@ class OpenCommandTest {
     when(command.hackMdService.getNote("invalid-id"))
         .thenThrow(new RuntimeException("Note not found"));
 
-    command.run();
+    assertEquals(1, command.call());
 
     String error = errorCapture.toString();
     assertTrue(error.contains("Error opening note"));

@@ -24,7 +24,7 @@ import com.couchbase.lite.SelectResult;
 import com.couchbase.lite.logging.ConsoleLogSink;
 import com.couchbase.lite.logging.LogSinks;
 import io.github.yuokada.hackmd.model.NoteDetailResponse;
-import io.quarkus.runtime.Startup;
+import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,14 +34,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 /**
  * Service for managing Couchbase Lite database operations.
+ *
+ * <p>The database is initialized lazily on first use and closed by the CDI shutdown lifecycle.</p>
  */
 @ApplicationScoped
-@Startup
 public class CouchbaseLiteService {
   private static final Logger logger = Logger.getLogger(CouchbaseLiteService.class);
 
@@ -58,7 +60,10 @@ public class CouchbaseLiteService {
   /**
    * Initializes the Couchbase Lite database.
    */
-  public void init() {
+  public synchronized void init() {
+    if (database != null) {
+      return;
+    }
     try {
       CouchbaseLite.init();
       // Disable Couchbase Lite logging
@@ -82,8 +87,9 @@ public class CouchbaseLiteService {
    */
   public void createFtsIndex() {
     try {
-      if (database == null) {
-        init();
+      ensureInitialized();
+      if (collection.getIndexes().contains(FTS_INDEX_NAME)) {
+        return;
       }
       // Create FTS index on content and title fields
       FullTextIndex ftsIndex =
@@ -91,8 +97,7 @@ public class CouchbaseLiteService {
               FullTextIndexItem.property("content"), FullTextIndexItem.property("title"));
       collection.createIndex(FTS_INDEX_NAME, ftsIndex);
     } catch (Exception e) {
-      // Index might already exist, which is fine
-      logger.error("FTS Index creation note: " + e.getMessage());
+      throw new RuntimeException("Failed to create FTS index", e);
     }
   }
 
@@ -103,10 +108,13 @@ public class CouchbaseLiteService {
    */
   public void saveNote(NoteDetailResponse note) {
     try {
-      if (database == null) {
-        init();
-      }
-      MutableDocument doc = new MutableDocument(toDocId(note.id()));
+      ensureInitialized();
+      String documentId = toDocId(note.id());
+      Document existingDocument = collection.getDocument(documentId);
+      MutableDocument doc =
+          existingDocument == null
+              ? new MutableDocument(documentId)
+              : existingDocument.toMutable();
       doc.setString("id", note.id());
       doc.setString("shortId", note.shortId());
       doc.setString("title", note.title());
@@ -145,9 +153,7 @@ public class CouchbaseLiteService {
    */
   public Map<String, Object> getNote(String noteId) {
     try {
-      if (database == null) {
-        init();
-      }
+      ensureInitialized();
       Document doc = collection.getDocument(toDocId(noteId));
       if (doc == null) {
         return null;
@@ -167,9 +173,7 @@ public class CouchbaseLiteService {
    */
   public boolean needsUpdate(String noteId, Instant updatedAt) {
     try {
-      if (database == null) {
-        init();
-      }
+      ensureInitialized();
       Document doc = collection.getDocument(toDocId(noteId));
       if (doc == null) {
         return true; // Note doesn't exist, needs to be fetched
@@ -200,9 +204,7 @@ public class CouchbaseLiteService {
    */
   public List<Map<String, Object>> searchNotes(String searchTerm) {
     try {
-      if (database == null) {
-        init();
-      }
+      ensureInitialized();
 
       Query query =
           QueryBuilder.select(
@@ -247,6 +249,39 @@ public class CouchbaseLiteService {
     }
   }
 
+  /**
+   * Removes indexed note documents that are no longer present in a complete remote listing.
+   *
+   * @param remoteNoteIds note IDs returned by the HackMD API
+   * @return the number of deleted local documents
+   */
+  public int removeMissingNotes(Set<String> remoteNoteIds) {
+    try {
+      ensureInitialized();
+      Query query =
+          QueryBuilder.select(SelectResult.expression(Meta.id).as("documentId"))
+              .from(DataSource.collection(collection));
+      int deleted = 0;
+      for (Result result : query.execute()) {
+        String documentId = result.getString("documentId");
+        if (documentId == null || !documentId.startsWith(ID_PREFIX)) {
+          continue;
+        }
+        String noteId = documentId.substring(ID_PREFIX.length());
+        if (!remoteNoteIds.contains(noteId)) {
+          Document document = collection.getDocument(documentId);
+          if (document != null) {
+            collection.delete(document);
+            deleted++;
+          }
+        }
+      }
+      return deleted;
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to remove stale notes", e);
+    }
+  }
+
   private static String toDocId(String noteId) {
     if (noteId.startsWith(ID_PREFIX)) {
       return noteId;
@@ -257,13 +292,22 @@ public class CouchbaseLiteService {
   /**
    * Closes the database.
    */
-  public void close() {
+  @PreDestroy
+  public synchronized void close() {
     try {
       if (database != null) {
         database.close();
+        database = null;
+        collection = null;
       }
     } catch (Exception e) {
       logger.warn("Failed to close Couchbase Lite database", e);
+    }
+  }
+
+  private synchronized void ensureInitialized() {
+    if (database == null) {
+      init();
     }
   }
 }

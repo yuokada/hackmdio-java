@@ -7,9 +7,9 @@ import jakarta.inject.Inject;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -17,7 +17,7 @@ import picocli.CommandLine.Option;
  * A command to list notes.
  */
 @Command(name = "list", description = "List notes")
-public class ListCommand implements Runnable {
+public class ListCommand implements Callable<Integer> {
 
   @Inject HackMdService hackMdService;
 
@@ -32,14 +32,13 @@ public class ListCommand implements Runnable {
       DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
 
   @Override
-  public void run() {
-    Set<Note> notesSet = hackMdService.listNotes();
-    if (notesSet.isEmpty()) {
+  public Integer call() {
+    List<Note> notes = new ArrayList<>(hackMdService.listNotes());
+    if (notes.isEmpty() && !jsonOutput) {
       System.out.println("No notes found.");
-      return;
+      return 0;
     }
 
-    List<Note> notes = new ArrayList<>(notesSet);
     // Sort by publishedAt descending, with nulls at the end.
     notes.sort(
         Comparator.comparing(Note::publishedAt, Comparator.nullsLast(Comparator.reverseOrder())));
@@ -49,6 +48,7 @@ public class ListCommand implements Runnable {
         System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(notes));
       } catch (Exception e) {
         System.err.println("Error serializing notes to JSON: " + e.getMessage());
+        return 1;
       }
     } else {
       int maxIdLength = "ID".length();
@@ -78,5 +78,6 @@ public class ListCommand implements Runnable {
         System.out.format(format, note.shortId(), note.title(), publishedAtStr);
       }
     }
+    return 0;
   }
 }
