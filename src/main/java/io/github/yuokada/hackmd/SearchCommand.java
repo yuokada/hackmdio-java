@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import org.jboss.logging.Logger;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
@@ -46,10 +47,10 @@ public class SearchCommand implements Callable<Integer> {
       try {
         System.out.println(
             objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(results));
-        return 0;
+        return ExitCode.OK;
       } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
         logger.error("Error serializing results to JSON", e);
-        return 1;
+        return ExitCode.SOFTWARE;
       }
     }
 
@@ -57,7 +58,7 @@ public class SearchCommand implements Callable<Integer> {
 
     if (results.isEmpty()) {
       System.out.println("No results found.");
-      return 0;
+      return ExitCode.OK;
     }
 
     System.out.printf("Found %d result(s):%n%n", results.size());
@@ -131,7 +132,7 @@ public class SearchCommand implements Callable<Integer> {
     }
 
     System.out.println();
-    return 0;
+    return ExitCode.OK;
   }
 
   @SuppressWarnings("unchecked")

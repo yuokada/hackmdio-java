@@ -11,6 +11,7 @@ import java.util.concurrent.Callable;
 import java.util.Comparator;
 import java.util.List;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.Option;
 
 /**
@@ -36,7 +37,7 @@ public class ListCommand implements Callable<Integer> {
     List<Note> notes = new ArrayList<>(hackMdService.listNotes());
     if (notes.isEmpty() && !jsonOutput) {
       System.out.println("No notes found.");
-      return 0;
+      return ExitCode.OK;
     }
 
     // Sort by publishedAt descending, with nulls at the end.
@@ -48,7 +49,7 @@ public class ListCommand implements Callable<Integer> {
         System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(notes));
       } catch (Exception e) {
         System.err.println("Error serializing notes to JSON: " + e.getMessage());
-        return 1;
+        return ExitCode.SOFTWARE;
       }
     } else {
       int maxIdLength = "ID".length();
@@ -78,6 +79,6 @@ public class ListCommand implements Callable<Integer> {
         System.out.format(format, note.shortId(), note.title(), publishedAtStr);
       }
     }
-    return 0;
+    return ExitCode.OK;
   }
 }

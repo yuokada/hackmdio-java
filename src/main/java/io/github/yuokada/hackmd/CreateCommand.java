@@ -5,6 +5,7 @@ import io.github.yuokada.hackmd.service.HackMdService;
 import jakarta.inject.Inject;
 import java.util.concurrent.Callable;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.Option;
 
 /**
@@ -33,6 +34,6 @@ public class CreateCommand implements Callable<Integer> {
     System.out.println("Successfully created note:");
     System.out.printf("Title: %s%n", newNote.title());
     System.out.printf("ID: %s%n", newNote.shortId());
-    return 0;
+    return ExitCode.OK;
   }
 }

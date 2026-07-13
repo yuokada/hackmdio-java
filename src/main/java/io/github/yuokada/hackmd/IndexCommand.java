@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.ClientWebApplicationException;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.ExitCode;
 
 /**
  * A command to index notes from HackMD to local Couchbase Lite database.
@@ -43,7 +44,7 @@ public class IndexCommand implements Callable<Integer> {
       System.out.println("No notes found.");
       int deletedNotes = couchbaseLiteService.removeMissingNotes(Set.of());
       System.out.printf("Deleted notes: %d%n", deletedNotes);
-      return 0;
+      return ExitCode.OK;
     }
 
     int totalNotes = notes.size();
@@ -107,10 +108,10 @@ public class IndexCommand implements Callable<Integer> {
     System.out.printf("Error notes: %d%n", errorNotes);
     if (errorNotes > 0) {
       System.err.println("Indexing completed with errors.");
-      return 1;
+      return ExitCode.SOFTWARE;
     }
     System.out.println("Indexing completed successfully.");
-    return 0;
+    return ExitCode.OK;
   }
 
   private NoteDetailResponse fetchNoteWithRetry(String noteId) {

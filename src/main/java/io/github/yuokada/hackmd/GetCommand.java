@@ -5,6 +5,7 @@ import io.github.yuokada.hackmd.service.HackMdService;
 import jakarta.inject.Inject;
 import java.util.concurrent.Callable;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.Parameters;
 
 /**
@@ -24,6 +25,6 @@ public class GetCommand implements Callable<Integer> {
     System.out.printf("Title: %s%n", note.title());
     System.out.println("---");
     System.out.println(note.content());
-    return 0;
+    return ExitCode.OK;
   }
 }

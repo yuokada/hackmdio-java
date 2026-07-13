@@ -9,6 +9,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.Callable;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.Parameters;
 
 /**
@@ -30,13 +31,13 @@ public class OpenCommand implements Callable<Integer> {
 
       if (publishLink == null || publishLink.isEmpty()) {
         System.err.println("Error: Note does not have a publish link.");
-        return 1;
+        return ExitCode.SOFTWARE;
       }
 
-      return openInBrowser(publishLink) ? 0 : 1;
+      return openInBrowser(publishLink) ? ExitCode.OK : ExitCode.SOFTWARE;
     } catch (Exception e) {
       System.err.println("Error opening note: " + e.getMessage());
-      return 1;
+      return ExitCode.SOFTWARE;
     }
   }
 
