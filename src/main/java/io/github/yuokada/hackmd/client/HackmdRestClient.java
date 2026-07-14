@@ -29,71 +29,67 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 @RegisterProvider(AuthorizationFilter.class)
 public interface HackmdRestClient {
 
-  @GET
-  @Path("/notes")
-  @Produces(MediaType.APPLICATION_JSON)
-  List<NoteDetailResponse> listNotes();
+    @GET
+    @Path("/notes")
+    @Produces(MediaType.APPLICATION_JSON)
+    List<NoteDetailResponse> listNotes();
 
-  @POST
-  @Path("/notes")
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  NoteDetailResponse createNote(CreateNoteRequest request);
+    @POST
+    @Path("/notes")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    NoteDetailResponse createNote(CreateNoteRequest request);
 
-  @GET
-  @Path("/notes/{noteId}")
-  @Produces(MediaType.APPLICATION_JSON)
-  NoteDetailResponse getNote(@PathParam("noteId") String noteId);
+    @GET
+    @Path("/notes/{noteId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    NoteDetailResponse getNote(@PathParam("noteId") String noteId);
 
-  @PATCH
-  @Path("/notes/{noteId}")
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  NoteDetailResponse updateNote(@PathParam("noteId") String noteId, UpdateNoteRequest request);
+    @PATCH
+    @Path("/notes/{noteId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    NoteDetailResponse updateNote(@PathParam("noteId") String noteId, UpdateNoteRequest request);
 
-  @GET
-  @Path("/teams")
-  @Produces(MediaType.APPLICATION_JSON)
-  List<Team> listTeams();
+    @GET
+    @Path("/teams")
+    @Produces(MediaType.APPLICATION_JSON)
+    List<Team> listTeams();
 
-  @GET
-  @Path("/teams/{teamPath}/notes")
-  @Produces(MediaType.APPLICATION_JSON)
-  List<NoteDetailResponse> listTeamNotes(@PathParam("teamPath") String teamPath);
+    @GET
+    @Path("/teams/{teamPath}/notes")
+    @Produces(MediaType.APPLICATION_JSON)
+    List<NoteDetailResponse> listTeamNotes(@PathParam("teamPath") String teamPath);
 
-  @POST
-  @Path("/teams/{teamPath}/notes")
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  NoteDetailResponse createTeamNote(
-      @PathParam("teamPath") String teamPath, CreateNoteRequest request);
+    @POST
+    @Path("/teams/{teamPath}/notes")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    NoteDetailResponse createTeamNote(@PathParam("teamPath") String teamPath, CreateNoteRequest request);
 
-  @GET
-  @Path("/teams/{teamPath}/notes/{noteId}")
-  @Produces(MediaType.APPLICATION_JSON)
-  NoteDetailResponse getTeamNote(
-      @PathParam("teamPath") String teamPath, @PathParam("noteId") String noteId);
+    @GET
+    @Path("/teams/{teamPath}/notes/{noteId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    NoteDetailResponse getTeamNote(@PathParam("teamPath") String teamPath, @PathParam("noteId") String noteId);
 
-  @PATCH
-  @Path("/teams/{teamPath}/notes/{noteId}")
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  NoteDetailResponse updateTeamNote(
-      @PathParam("teamPath") String teamPath,
-      @PathParam("noteId") String noteId,
-      UpdateNoteRequest request);
+    @PATCH
+    @Path("/teams/{teamPath}/notes/{noteId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    NoteDetailResponse updateTeamNote(
+            @PathParam("teamPath") String teamPath, @PathParam("noteId") String noteId, UpdateNoteRequest request);
 
-  @DELETE
-  @Path("/teams/{teamPath}/notes/{noteId}")
-  void deleteTeamNote(@PathParam("teamPath") String teamPath, @PathParam("noteId") String noteId);
+    @DELETE
+    @Path("/teams/{teamPath}/notes/{noteId}")
+    void deleteTeamNote(@PathParam("teamPath") String teamPath, @PathParam("noteId") String noteId);
 
-  @GET
-  @Path("/me")
-  @Produces(MediaType.APPLICATION_JSON)
-  UserProfile getCurrentUser();
+    @GET
+    @Path("/me")
+    @Produces(MediaType.APPLICATION_JSON)
+    UserProfile getCurrentUser();
 
-  @GET
-  @Path("/history")
-  @Produces(MediaType.APPLICATION_JSON)
-  List<Map<String, Object>> getHistory(@QueryParam("limit") Integer limit);
+    @GET
+    @Path("/history")
+    @Produces(MediaType.APPLICATION_JSON)
+    List<Map<String, Object>> getHistory(@QueryParam("limit") Integer limit);
 }

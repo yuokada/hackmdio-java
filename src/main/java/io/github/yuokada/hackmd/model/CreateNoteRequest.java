@@ -8,5 +8,4 @@ package io.github.yuokada.hackmd.model;
  * @param readPermission  The read permission for the note.
  * @param writePermission The write permission for the note.
  */
-public record CreateNoteRequest(
-    String title, String content, String readPermission, String writePermission) {}
+public record CreateNoteRequest(String title, String content, String readPermission, String writePermission) {}
