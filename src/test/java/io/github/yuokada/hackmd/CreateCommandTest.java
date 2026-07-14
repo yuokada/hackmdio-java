@@ -15,30 +15,31 @@ import org.junit.jupiter.api.Test;
 
 class CreateCommandTest {
 
-  private final PrintStream originalOut = System.out;
-  private ByteArrayOutputStream output;
-  private HackmdCommand command;
+    private final PrintStream originalOut = System.out;
+    private ByteArrayOutputStream output;
+    private HackmdCommand command;
 
-  @BeforeEach
-  void setUp() {
-    output = new ByteArrayOutputStream();
-    System.setOut(new PrintStream(output));
-    command = new HackmdCommand();
-    command.hackMdService = mock(HackMdService.class);
-  }
+    @BeforeEach
+    void setUp() {
+        output = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(output));
+        command = new HackmdCommand();
+        command.hackMdService = mock(HackMdService.class);
+    }
 
-  @AfterEach
-  void tearDown() {
-    System.setOut(originalOut);
-  }
+    @AfterEach
+    void tearDown() {
+        System.setOut(originalOut);
+    }
 
-  @Test
-  void createsAndPrintsNote() {
-    when(command.hackMdService.createNote("Title", "Body"))
-        .thenReturn(TestFixtures.note("abc", "Title", "Body", Instant.now()).toNote());
+    @Test
+    void createsAndPrintsNote() {
+        when(command.hackMdService.createNote("Title", "Body"))
+                .thenReturn(
+                        TestFixtures.note("abc", "Title", "Body", Instant.now()).toNote());
 
-    assertEquals(0, command.create("Title", "Body"));
+        assertEquals(0, command.create("Title", "Body"));
 
-    assertTrue(output.toString().contains("ID: abc"));
-  }
+        assertTrue(output.toString().contains("ID: abc"));
+    }
 }

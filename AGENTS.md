@@ -24,7 +24,8 @@ A Quarkus + Picocli CLI application for interacting with the HackMD API. It supp
 ./mvnw test -Dtest=AuthorizationFilterTest#testFilterAddsAuthorizationHeader # Single test method
 
 # Linting
-./mvnw checkstyle:check           # Google Java Style (also runs during validate phase)
+./mvnw spotless:check   # Palantir Java Format (also runs during validate phase)
+./mvnw spotless:apply   # Auto-apply formatting
 ```
 
 **Java 17** is required (`maven.compiler.release=17`). The Maven wrapper (`./mvnw`) is included.
@@ -41,7 +42,7 @@ A Quarkus + Picocli CLI application for interacting with the HackMD API. It supp
 
 ## Coding Style
 
-- Google Java Style enforced by Checkstyle (4-space indentation)
+- Palantir Java Format enforced by Spotless (4-space indentation)
 - Models use Java records
 - Test classes follow `*Test.java` naming
 

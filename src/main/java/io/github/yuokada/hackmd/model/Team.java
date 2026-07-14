@@ -8,13 +8,14 @@ import java.time.Instant;
  * Represents a HackMD team definition.
  */
 public record Team(
-    String id,
-    String ownerId,
-    String name,
-    String logo,
-    String path,
-    String description,
-    TeamVisibility visibility,
-    boolean upgraded,
-    @JsonProperty("createdAt") @JsonDeserialize(using = EpochMillisInstantDeserializer.class)
+        String id,
+        String ownerId,
+        String name,
+        String logo,
+        String path,
+        String description,
+        TeamVisibility visibility,
+        boolean upgraded,
+
+        @JsonProperty("createdAt") @JsonDeserialize(using = EpochMillisInstantDeserializer.class)
         Instant createdAt) {}

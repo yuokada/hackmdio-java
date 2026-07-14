@@ -21,205 +21,204 @@ import org.junit.jupiter.api.Test;
 
 class SearchCommandTest {
 
-  private final PrintStream originalOut = System.out;
-  private ByteArrayOutputStream outputCapture;
-  private SearchCommand command;
+    private final PrintStream originalOut = System.out;
+    private ByteArrayOutputStream outputCapture;
+    private SearchCommand command;
 
-  @BeforeEach
-  void setUp() {
-    outputCapture = new ByteArrayOutputStream();
-    System.setOut(new PrintStream(outputCapture));
+    @BeforeEach
+    void setUp() {
+        outputCapture = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputCapture));
 
-    command = new SearchCommand();
-    command.couchbaseLiteService = mock(CouchbaseLiteService.class);
-    command.objectMapper = new ObjectMapper();
-    command.searchTerm = "test";
-    command.logger = Logger.getLogger(SearchCommandTest.class);
-  }
+        command = new SearchCommand();
+        command.couchbaseLiteService = mock(CouchbaseLiteService.class);
+        command.objectMapper = new ObjectMapper();
+        command.searchTerm = "test";
+        command.logger = Logger.getLogger(SearchCommandTest.class);
+    }
 
-  @AfterEach
-  void tearDown() {
-    System.setOut(originalOut);
-  }
+    @AfterEach
+    void tearDown() {
+        System.setOut(originalOut);
+    }
 
-  @Test
-  void runWithEmptyResults() {
-    when(command.couchbaseLiteService.searchNotes("test")).thenReturn(List.of());
+    @Test
+    void runWithEmptyResults() {
+        when(command.couchbaseLiteService.searchNotes("test")).thenReturn(List.of());
 
-    assertEquals(0, command.call());
+        assertEquals(0, command.call());
 
-    String output = outputCapture.toString();
-    assertTrue(output.contains("No results found."));
-  }
+        String output = outputCapture.toString();
+        assertTrue(output.contains("No results found."));
+    }
 
-  @Test
-  void runWithTableOutput() {
-    Map<String, Object> result = new HashMap<>();
-    result.put("shortId", "abc123");
-    result.put("title", "Test Note");
-    result.put("content", "This is a test content");
-    result.put("tags", List.of("java", "quarkus"));
-    result.put("updatedAt", "2024-08-15T10:00:00Z");
+    @Test
+    void runWithTableOutput() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("shortId", "abc123");
+        result.put("title", "Test Note");
+        result.put("content", "This is a test content");
+        result.put("tags", List.of("java", "quarkus"));
+        result.put("updatedAt", "2024-08-15T10:00:00Z");
 
-    when(command.couchbaseLiteService.searchNotes("test")).thenReturn(List.of(result));
+        when(command.couchbaseLiteService.searchNotes("test")).thenReturn(List.of(result));
 
-    assertEquals(0, command.call());
+        assertEquals(0, command.call());
 
-    String output = outputCapture.toString();
-    assertTrue(output.contains("Found 1 result(s):"));
-    assertTrue(output.contains("abc123"));
-    assertTrue(output.contains("Test Note"));
-    assertTrue(output.contains("java, quarkus"));
-    assertTrue(output.contains("[test]"));
-    assertTrue(output.contains("ID"));
-    assertTrue(output.contains("Title"));
-    assertTrue(output.contains("Tags"));
-    assertTrue(output.contains("Updated At"));
-    assertTrue(output.contains("Snippet"));
-  }
+        String output = outputCapture.toString();
+        assertTrue(output.contains("Found 1 result(s):"));
+        assertTrue(output.contains("abc123"));
+        assertTrue(output.contains("Test Note"));
+        assertTrue(output.contains("java, quarkus"));
+        assertTrue(output.contains("[test]"));
+        assertTrue(output.contains("ID"));
+        assertTrue(output.contains("Title"));
+        assertTrue(output.contains("Tags"));
+        assertTrue(output.contains("Updated At"));
+        assertTrue(output.contains("Snippet"));
+    }
 
-  @Test
-  void runWithJsonOutput() throws Exception {
-    command.jsonOutput = true;
+    @Test
+    void runWithJsonOutput() throws Exception {
+        command.jsonOutput = true;
 
-    Map<String, Object> result = new HashMap<>();
-    result.put("shortId", "abc123");
-    result.put("title", "Test Note");
-    result.put("content", "This is a test content");
+        Map<String, Object> result = new HashMap<>();
+        result.put("shortId", "abc123");
+        result.put("title", "Test Note");
+        result.put("content", "This is a test content");
 
-    when(command.couchbaseLiteService.searchNotes("test")).thenReturn(List.of(result));
+        when(command.couchbaseLiteService.searchNotes("test")).thenReturn(List.of(result));
 
-    assertEquals(0, command.call());
+        assertEquals(0, command.call());
 
-    String output = outputCapture.toString();
-    List<?> parsed = new ObjectMapper().readValue(output, List.class);
-    assertEquals(1, parsed.size());
-    assertEquals("abc123", ((Map<?, ?>) parsed.get(0)).get("shortId"));
-    assertFalse(output.contains("Searching for:"));
-  }
+        String output = outputCapture.toString();
+        List<?> parsed = new ObjectMapper().readValue(output, List.class);
+        assertEquals(1, parsed.size());
+        assertEquals("abc123", ((Map<?, ?>) parsed.get(0)).get("shortId"));
+        assertFalse(output.contains("Searching for:"));
+    }
 
-  @Test
-  void runWithNullFields() {
-    Map<String, Object> result = new HashMap<>();
-    result.put("shortId", null);
-    result.put("title", null);
-    result.put("content", null);
-    result.put("updatedAt", null);
+    @Test
+    void runWithNullFields() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("shortId", null);
+        result.put("title", null);
+        result.put("content", null);
+        result.put("updatedAt", null);
 
-    when(command.couchbaseLiteService.searchNotes("test")).thenReturn(List.of(result));
+        when(command.couchbaseLiteService.searchNotes("test")).thenReturn(List.of(result));
 
-    assertEquals(0, command.call());
+        assertEquals(0, command.call());
 
-    String output = outputCapture.toString();
-    assertTrue(output.contains("N/A"));
-  }
+        String output = outputCapture.toString();
+        assertTrue(output.contains("N/A"));
+    }
 
-  @Test
-  void formatTagsWithValidTags() throws Exception {
-    Map<String, Object> result = new HashMap<>();
-    result.put("tags", List.of("a", "b", "c"));
+    @Test
+    void formatTagsWithValidTags() throws Exception {
+        Map<String, Object> result = new HashMap<>();
+        result.put("tags", List.of("a", "b", "c"));
 
-    String tags = invokeFormatTags(result);
-    assertEquals("a, b, c", tags);
-  }
+        String tags = invokeFormatTags(result);
+        assertEquals("a, b, c", tags);
+    }
 
-  @Test
-  void formatTagsWithEmptyList() throws Exception {
-    Map<String, Object> result = new HashMap<>();
-    result.put("tags", List.of());
+    @Test
+    void formatTagsWithEmptyList() throws Exception {
+        Map<String, Object> result = new HashMap<>();
+        result.put("tags", List.of());
 
-    String tags = invokeFormatTags(result);
-    assertEquals("N/A", tags);
-  }
+        String tags = invokeFormatTags(result);
+        assertEquals("N/A", tags);
+    }
 
-  @Test
-  void formatTagsWithNull() throws Exception {
-    Map<String, Object> result = new HashMap<>();
+    @Test
+    void formatTagsWithNull() throws Exception {
+        Map<String, Object> result = new HashMap<>();
 
-    String tags = invokeFormatTags(result);
-    assertEquals("N/A", tags);
-  }
+        String tags = invokeFormatTags(result);
+        assertEquals("N/A", tags);
+    }
 
-  @Test
-  void formatUpdatedAtWithValidInstant() throws Exception {
-    Map<String, Object> result = new HashMap<>();
-    result.put("updatedAt", "2024-08-15T10:00:00Z");
+    @Test
+    void formatUpdatedAtWithValidInstant() throws Exception {
+        Map<String, Object> result = new HashMap<>();
+        result.put("updatedAt", "2024-08-15T10:00:00Z");
 
-    String formatted = invokeFormatUpdatedAt(result);
-    assertTrue(formatted.contains("2024"));
-    assertTrue(formatted.matches("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}"));
-  }
+        String formatted = invokeFormatUpdatedAt(result);
+        assertTrue(formatted.contains("2024"));
+        assertTrue(formatted.matches("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}"));
+    }
 
-  @Test
-  void formatUpdatedAtWithNull() throws Exception {
-    Map<String, Object> result = new HashMap<>();
+    @Test
+    void formatUpdatedAtWithNull() throws Exception {
+        Map<String, Object> result = new HashMap<>();
 
-    String formatted = invokeFormatUpdatedAt(result);
-    assertEquals("N/A", formatted);
-  }
+        String formatted = invokeFormatUpdatedAt(result);
+        assertEquals("N/A", formatted);
+    }
 
-  @Test
-  void formatUpdatedAtWithEmpty() throws Exception {
-    Map<String, Object> result = new HashMap<>();
-    result.put("updatedAt", "");
+    @Test
+    void formatUpdatedAtWithEmpty() throws Exception {
+        Map<String, Object> result = new HashMap<>();
+        result.put("updatedAt", "");
 
-    String formatted = invokeFormatUpdatedAt(result);
-    assertEquals("N/A", formatted);
-  }
+        String formatted = invokeFormatUpdatedAt(result);
+        assertEquals("N/A", formatted);
+    }
 
-  @Test
-  void formatUpdatedAtWithInvalidString() throws Exception {
-    Map<String, Object> result = new HashMap<>();
-    result.put("updatedAt", "not-a-date");
+    @Test
+    void formatUpdatedAtWithInvalidString() throws Exception {
+        Map<String, Object> result = new HashMap<>();
+        result.put("updatedAt", "not-a-date");
 
-    String formatted = invokeFormatUpdatedAt(result);
-    assertEquals("not-a-date", formatted);
-  }
+        String formatted = invokeFormatUpdatedAt(result);
+        assertEquals("not-a-date", formatted);
+    }
 
-  @Test
-  void runWithMultipleResults() {
-    Map<String, Object> result1 = new HashMap<>();
-    result1.put("shortId", "id1");
-    result1.put("title", "First");
-    result1.put("content", "test in first");
+    @Test
+    void runWithMultipleResults() {
+        Map<String, Object> result1 = new HashMap<>();
+        result1.put("shortId", "id1");
+        result1.put("title", "First");
+        result1.put("content", "test in first");
 
-    Map<String, Object> result2 = new HashMap<>();
-    result2.put("shortId", "id2");
-    result2.put("title", "Second");
-    result2.put("content", "test in second");
+        Map<String, Object> result2 = new HashMap<>();
+        result2.put("shortId", "id2");
+        result2.put("title", "Second");
+        result2.put("content", "test in second");
 
-    when(command.couchbaseLiteService.searchNotes("test"))
-        .thenReturn(List.of(result1, result2));
+        when(command.couchbaseLiteService.searchNotes("test")).thenReturn(List.of(result1, result2));
 
-    assertEquals(0, command.call());
+        assertEquals(0, command.call());
 
-    String output = outputCapture.toString();
-    assertTrue(output.contains("Found 2 result(s):"));
-    assertTrue(output.contains("id1"));
-    assertTrue(output.contains("id2"));
-  }
+        String output = outputCapture.toString();
+        assertTrue(output.contains("Found 2 result(s):"));
+        assertTrue(output.contains("id1"));
+        assertTrue(output.contains("id2"));
+    }
 
-  @Test
-  void runWithJsonOutputAndEmptyResults() throws Exception {
-    command.jsonOutput = true;
-    when(command.couchbaseLiteService.searchNotes("test")).thenReturn(List.of());
+    @Test
+    void runWithJsonOutputAndEmptyResults() throws Exception {
+        command.jsonOutput = true;
+        when(command.couchbaseLiteService.searchNotes("test")).thenReturn(List.of());
 
-    assertEquals(0, command.call());
+        assertEquals(0, command.call());
 
-    assertEquals(List.of(), new ObjectMapper().readValue(outputCapture.toString(), List.class));
-  }
+        assertEquals(List.of(), new ObjectMapper().readValue(outputCapture.toString(), List.class));
+    }
 
-  @SuppressWarnings("unchecked")
-  private static String invokeFormatTags(Map<String, Object> result) throws Exception {
-    Method method = SearchCommand.class.getDeclaredMethod("formatTags", Map.class);
-    method.setAccessible(true);
-    return (String) method.invoke(null, result);
-  }
+    @SuppressWarnings("unchecked")
+    private static String invokeFormatTags(Map<String, Object> result) throws Exception {
+        Method method = SearchCommand.class.getDeclaredMethod("formatTags", Map.class);
+        method.setAccessible(true);
+        return (String) method.invoke(null, result);
+    }
 
-  @SuppressWarnings("unchecked")
-  private static String invokeFormatUpdatedAt(Map<String, Object> result) throws Exception {
-    Method method = SearchCommand.class.getDeclaredMethod("formatUpdatedAt", Map.class);
-    method.setAccessible(true);
-    return (String) method.invoke(null, result);
-  }
+    @SuppressWarnings("unchecked")
+    private static String invokeFormatUpdatedAt(Map<String, Object> result) throws Exception {
+        Method method = SearchCommand.class.getDeclaredMethod("formatUpdatedAt", Map.class);
+        method.setAccessible(true);
+        return (String) method.invoke(null, result);
+    }
 }

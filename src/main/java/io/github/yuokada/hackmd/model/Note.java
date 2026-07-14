@@ -16,10 +16,10 @@ import java.util.List;
  * @param lastChangedAt The timestamp when the note was last updated.
  */
 public record Note(
-    String id,
-    String title,
-    String content,
-    List<String> tags,
-    @JsonProperty("publishedAt") Instant publishedAt,
-    @JsonProperty("shortId") String shortId,
-    @JsonProperty("lastChangedAt") Instant lastChangedAt) {}
+        String id,
+        String title,
+        String content,
+        List<String> tags,
+        @JsonProperty("publishedAt") Instant publishedAt,
+        @JsonProperty("shortId") String shortId,
+        @JsonProperty("lastChangedAt") Instant lastChangedAt) {}

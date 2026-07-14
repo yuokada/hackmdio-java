@@ -95,15 +95,16 @@ The `search` command performs full-text search on locally indexed notes:
 ./mvnw quarkus:dev
 ./mvnw quarkus:dev -Dquarkus.args='list --json'
 
-# Run the complete verification lifecycle (tests, Checkstyle, and coverage check)
+# Run the complete verification lifecycle (tests, Spotless check, and coverage check)
 ./mvnw verify
 
-# Checkstyle (Google Java Style)
-./mvnw checkstyle:check
+# Spotless (Palantir Java Format)
+./mvnw spotless:check   # Check formatting
+./mvnw spotless:apply   # Auto-apply formatting
 ```
 
 ## CI
 
-Every push and pull request targeting `master` triggers the GitHub Actions workflow defined in `.github/workflows/ci.yml`, which sets up Temurin JDK 17 and runs `./mvnw -B verify`. The build enforces Checkstyle and a minimum 70% line-coverage baseline in addition to running the test suite.
+Every push and pull request targeting `master` triggers the GitHub Actions workflow defined in `.github/workflows/ci.yml`, which sets up Temurin JDK 17 and runs `./mvnw -B verify`. The build enforces Spotless formatting (Palantir Java Format) and a minimum 70% line-coverage baseline in addition to running the test suite.
 
 Dependency updates are monitored by Dependabot (`.github/dependabot.yml`), which opens weekly pull requests for Maven dependencies and GitHub Actions.

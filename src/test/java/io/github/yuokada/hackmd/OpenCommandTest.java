@@ -1,8 +1,8 @@
 package io.github.yuokada.hackmd;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -21,130 +21,126 @@ import org.junit.jupiter.api.Test;
 
 class OpenCommandTest {
 
-  private final PrintStream originalOut = System.out;
-  private final PrintStream originalErr = System.err;
-  private ByteArrayOutputStream outputCapture;
-  private ByteArrayOutputStream errorCapture;
-  private HackmdCommand command;
+    private final PrintStream originalOut = System.out;
+    private final PrintStream originalErr = System.err;
+    private ByteArrayOutputStream outputCapture;
+    private ByteArrayOutputStream errorCapture;
+    private HackmdCommand command;
 
-  @BeforeEach
-  void setUp() {
-    outputCapture = new ByteArrayOutputStream();
-    errorCapture = new ByteArrayOutputStream();
-    System.setOut(new PrintStream(outputCapture));
-    System.setErr(new PrintStream(errorCapture));
+    @BeforeEach
+    void setUp() {
+        outputCapture = new ByteArrayOutputStream();
+        errorCapture = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputCapture));
+        System.setErr(new PrintStream(errorCapture));
 
-    command = spy(new HackmdCommand());
-    command.hackMdService = mock(HackMdService.class);
-  }
+        command = spy(new HackmdCommand());
+        command.hackMdService = mock(HackMdService.class);
+    }
 
-  @AfterEach
-  void tearDown() {
-    System.setOut(originalOut);
-    System.setErr(originalErr);
-  }
+    @AfterEach
+    void tearDown() {
+        System.setOut(originalOut);
+        System.setErr(originalErr);
+    }
 
-  @Test
-  void runWithValidPermalink() throws Exception {
-    NoteDetailResponse note =
-        new NoteDetailResponse(
-            "test-id",
-            "Test Note",
-            Collections.emptyList(),
-            Instant.now(),
-            Instant.now(),
-            Instant.now(),
-            "view",
-            null,
-            null,
-            "https://hackmd.io/@user/test-note",
-            "abc123",
-            "Test content",
-            Instant.now(),
-            null,
-            null,
-            null,
-            "owner",
-            "signed_in");
+    @Test
+    void runWithValidPermalink() throws Exception {
+        NoteDetailResponse note = new NoteDetailResponse(
+                "test-id",
+                "Test Note",
+                Collections.emptyList(),
+                Instant.now(),
+                Instant.now(),
+                Instant.now(),
+                "view",
+                null,
+                null,
+                "https://hackmd.io/@user/test-note",
+                "abc123",
+                "Test content",
+                Instant.now(),
+                null,
+                null,
+                null,
+                "owner",
+                "signed_in");
 
-    when(command.hackMdService.getNote("test-id")).thenReturn(note);
-    doReturn(true).when(command).openInBrowser(anyString());
+        when(command.hackMdService.getNote("test-id")).thenReturn(note);
+        doReturn(true).when(command).openInBrowser(anyString());
 
-    assertEquals(0, command.open("test-id"));
+        assertEquals(0, command.open("test-id"));
 
-    verify(command).openInBrowser("https://hackmd.io/@user/test-note");
-  }
+        verify(command).openInBrowser("https://hackmd.io/@user/test-note");
+    }
 
-  @Test
-  void runWithNullPermalink() {
-    NoteDetailResponse note =
-        new NoteDetailResponse(
-            "test-id",
-            "Test Note",
-            Collections.emptyList(),
-            Instant.now(),
-            Instant.now(),
-            Instant.now(),
-            "view",
-            null,
-            null,
-            null,
-            "abc123",
-            "Test content",
-            Instant.now(),
-            null,
-            null,
-            null,
-            "owner",
-            "signed_in");
+    @Test
+    void runWithNullPermalink() {
+        NoteDetailResponse note = new NoteDetailResponse(
+                "test-id",
+                "Test Note",
+                Collections.emptyList(),
+                Instant.now(),
+                Instant.now(),
+                Instant.now(),
+                "view",
+                null,
+                null,
+                null,
+                "abc123",
+                "Test content",
+                Instant.now(),
+                null,
+                null,
+                null,
+                "owner",
+                "signed_in");
 
-    when(command.hackMdService.getNote("test-id")).thenReturn(note);
+        when(command.hackMdService.getNote("test-id")).thenReturn(note);
 
-    assertEquals(1, command.open("test-id"));
+        assertEquals(1, command.open("test-id"));
 
-    String error = errorCapture.toString();
-    assertTrue(error.contains("Note does not have a publish link"));
-  }
+        String error = errorCapture.toString();
+        assertTrue(error.contains("Note does not have a publish link"));
+    }
 
-  @Test
-  void runWithEmptyPermalink() {
-    NoteDetailResponse note =
-        new NoteDetailResponse(
-            "test-id",
-            "Test Note",
-            Collections.emptyList(),
-            Instant.now(),
-            Instant.now(),
-            Instant.now(),
-            "view",
-            null,
-            null,
-            "",
-            "abc123",
-            "Test content",
-            Instant.now(),
-            null,
-            null,
-            null,
-            "owner",
-            "signed_in");
+    @Test
+    void runWithEmptyPermalink() {
+        NoteDetailResponse note = new NoteDetailResponse(
+                "test-id",
+                "Test Note",
+                Collections.emptyList(),
+                Instant.now(),
+                Instant.now(),
+                Instant.now(),
+                "view",
+                null,
+                null,
+                "",
+                "abc123",
+                "Test content",
+                Instant.now(),
+                null,
+                null,
+                null,
+                "owner",
+                "signed_in");
 
-    when(command.hackMdService.getNote("test-id")).thenReturn(note);
+        when(command.hackMdService.getNote("test-id")).thenReturn(note);
 
-    assertEquals(1, command.open("test-id"));
+        assertEquals(1, command.open("test-id"));
 
-    String error = errorCapture.toString();
-    assertTrue(error.contains("Note does not have a publish link"));
-  }
+        String error = errorCapture.toString();
+        assertTrue(error.contains("Note does not have a publish link"));
+    }
 
-  @Test
-  void runWithServiceException() {
-    when(command.hackMdService.getNote("invalid-id"))
-        .thenThrow(new RuntimeException("Note not found"));
+    @Test
+    void runWithServiceException() {
+        when(command.hackMdService.getNote("invalid-id")).thenThrow(new RuntimeException("Note not found"));
 
-    assertEquals(1, command.open("invalid-id"));
+        assertEquals(1, command.open("invalid-id"));
 
-    String error = errorCapture.toString();
-    assertTrue(error.contains("Error opening note"));
-  }
+        String error = errorCapture.toString();
+        assertTrue(error.contains("Error opening note"));
+    }
 }

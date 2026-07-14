@@ -15,30 +15,29 @@ import org.junit.jupiter.api.Test;
 
 class GetCommandTest {
 
-  private final PrintStream originalOut = System.out;
-  private ByteArrayOutputStream output;
+    private final PrintStream originalOut = System.out;
+    private ByteArrayOutputStream output;
 
-  @BeforeEach
-  void setUp() {
-    output = new ByteArrayOutputStream();
-    System.setOut(new PrintStream(output));
-  }
+    @BeforeEach
+    void setUp() {
+        output = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(output));
+    }
 
-  @AfterEach
-  void tearDown() {
-    System.setOut(originalOut);
-  }
+    @AfterEach
+    void tearDown() {
+        System.setOut(originalOut);
+    }
 
-  @Test
-  void printsNoteContent() {
-    HackmdCommand command = new HackmdCommand();
-    command.hackMdService = mock(HackMdService.class);
-    when(command.hackMdService.getNote("abc"))
-        .thenReturn(TestFixtures.note("abc", "Title", "Body", Instant.now()));
+    @Test
+    void printsNoteContent() {
+        HackmdCommand command = new HackmdCommand();
+        command.hackMdService = mock(HackMdService.class);
+        when(command.hackMdService.getNote("abc")).thenReturn(TestFixtures.note("abc", "Title", "Body", Instant.now()));
 
-    assertEquals(0, command.get("abc"));
+        assertEquals(0, command.get("abc"));
 
-    assertTrue(output.toString().contains("Title: Title"));
-    assertTrue(output.toString().contains("Body"));
-  }
+        assertTrue(output.toString().contains("Title: Title"));
+        assertTrue(output.toString().contains("Body"));
+    }
 }
