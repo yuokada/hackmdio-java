@@ -5,9 +5,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.github.yuokada.hackmd.client.HackmdRestClient;
 import io.github.yuokada.hackmd.model.CreateNoteRequest;
 import io.github.yuokada.hackmd.model.NoteDetailResponse;
+import io.github.yuokada.hackmd.transport.HackMdTransport;
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,36 +16,35 @@ import org.junit.jupiter.api.Test;
 class HackMdServiceTest {
 
     private HackMdService service;
-    private HackmdRestClient restClient;
+    private HackMdTransport transport;
 
     @BeforeEach
     void setUp() {
-        service = new HackMdService();
-        restClient = mock(HackmdRestClient.class);
-        service.hackmdRestClient = restClient;
+        transport = mock(HackMdTransport.class);
+        service = new HackMdService(transport);
     }
 
     @Test
-    void listsNotesThroughCanonicalClient() {
-        when(restClient.listNotes()).thenReturn(List.of(note("abc")));
+    void listsNotesThroughTransport() {
+        when(transport.listNotes()).thenReturn(List.of(note("abc")));
 
         assertEquals("abc", service.listNotes().get(0).id());
     }
 
     @Test
-    void createsNotesThroughCanonicalClient() {
-        when(restClient.createNote(new CreateNoteRequest("Title", "Body", "owner", "owner")))
+    void createsNotesThroughTransport() {
+        when(transport.createNote(new CreateNoteRequest("Title", "Body", "owner", "owner")))
                 .thenReturn(note("abc"));
 
         assertEquals("abc", service.createNote("Title", "Body").id());
     }
 
     @Test
-    void getsNotesThroughCanonicalClient() {
-        when(restClient.getNote("abc")).thenReturn(note("abc"));
+    void getsNotesThroughTransport() {
+        when(transport.getNote("abc")).thenReturn(note("abc"));
 
         assertEquals("abc", service.getNote("abc").id());
-        verify(restClient).getNote("abc");
+        verify(transport).getNote("abc");
     }
 
     private static NoteDetailResponse note(String id) {
