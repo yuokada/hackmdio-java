@@ -1,13 +1,12 @@
 package io.github.yuokada.hackmd.service;
 
-import io.github.yuokada.hackmd.client.HackmdRestClient;
 import io.github.yuokada.hackmd.model.CreateNoteRequest;
 import io.github.yuokada.hackmd.model.Note;
 import io.github.yuokada.hackmd.model.NoteDetailResponse;
+import io.github.yuokada.hackmd.transport.HackMdTransport;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.List;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 /**
  * A service to interact with the HackMD API and persist note metadata.
@@ -15,9 +14,12 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 @ApplicationScoped
 public class HackMdService {
 
+    private final HackMdTransport hackMdTransport;
+
     @Inject
-    @RestClient
-    HackmdRestClient hackmdRestClient;
+    public HackMdService(HackMdTransport hackMdTransport) {
+        this.hackMdTransport = hackMdTransport;
+    }
 
     /**
      * Lists all notes from the API and synchronizes them with the local database.
@@ -25,13 +27,13 @@ public class HackMdService {
      * @return A set of notes.
      */
     public List<Note> listNotes() {
-        return hackmdRestClient.listNotes().stream()
+        return hackMdTransport.listNotes().stream()
                 .map(NoteDetailResponse::toNote)
                 .toList();
     }
 
     public List<NoteDetailResponse> listNoteDetails() {
-        return hackmdRestClient.listNotes();
+        return hackMdTransport.listNotes();
     }
 
     /**
@@ -43,7 +45,7 @@ public class HackMdService {
      */
     public Note createNote(String title, String content) {
         var request = new CreateNoteRequest(title, content, "owner", "owner");
-        return hackmdRestClient.createNote(request).toNote();
+        return hackMdTransport.createNote(request).toNote();
     }
 
     /**
@@ -53,6 +55,6 @@ public class HackMdService {
      * @return The note.
      */
     public NoteDetailResponse getNote(String noteId) {
-        return hackmdRestClient.getNote(noteId);
+        return hackMdTransport.getNote(noteId);
     }
 }
